@@ -13,7 +13,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "globals.h"
 
 // Road Generator Palette Representation
@@ -86,10 +86,10 @@ extern uint32_t TrackLoader_scenerymap_offset;
 void TrackLoader_Create();
 void TrackLoader_Destroy();
 
-void TrackLoader_init(Boolean jap);
-Boolean TrackLoader_set_layout_track(const char* filename);
-void TrackLoader_init_original_tracks(Boolean jap);
-void TrackLoader_init_layout_tracks(Boolean jap);
+void TrackLoader_init(uint8_t jap);
+uint8_t TrackLoader_set_layout_track(const char* filename);
+void TrackLoader_init_original_tracks(uint8_t jap);
+void TrackLoader_init_layout_tracks(uint8_t jap);
 void TrackLoader_init_track(const uint32_t);
 void TrackLoader_init_track_split();
 void TrackLoader_init_track_bonus(const uint32_t);

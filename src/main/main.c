@@ -7,18 +7,17 @@
 
 // SDL Library
 #include <SDL.h>
-#pragma comment(lib, "SDLmain.lib") // Replace main with SDL_main
-#pragma comment(lib, "SDL.lib")
-#pragma comment(lib, "glu32.lib")
+#include <stdint.h>
 
 // SDL Specific Code
 #include "sdl/timer.h"
 #include "sdl/input.h"
-#include "Video.h"
+#include "sdl/music.h"
+#include "video.h"
 
 #include "romloader.h"
 #include "trackloader.h"
-#include "stdint.h"
+#include <stdint.h>
 #include "main.h"
 #include "setup.h"
 
@@ -34,18 +33,10 @@
 int    cannonball_state       = STATE_BOOT;
 double cannonball_frame_ms    = 0;
 int    cannonball_frame       = 0;
-Boolean   cannonball_tick_frame  = TRUE;
+uint8_t   cannonball_tick_frame  = 1;
 int    cannonball_fps_counter = 0;
 
-
-extern  int kprintf (char *fmt, ... );
-
-int kprintf (char *fmt, ... )
-{
-    return 0;
-}
-
-static void quit_func(int code)
+static void Clear_Cannonball()
 {
 #ifdef COMPILE_SOUND_CODE
     Audio_stop_audio();
@@ -53,14 +44,12 @@ static void quit_func(int code)
     I_CAMD_StopSong();
     I_CAMD_ShutdownMusic();
     Input_close();
-    //SDL_Quit();
-    exit(code);
+    Render_disable();
+    SDL_Quit();
 }
 
 static void process_events(void)
 {
-    
-    /*
     SDL_Event event;
 
     // Grab all events from the queue.
@@ -98,12 +87,10 @@ static void process_events(void)
                 break;
         }
     }
-    
-    */
 }
 
 // Pause Engine
-Boolean pause_engine;
+uint8_t pause_engine;
 
 static void tick()
 {
@@ -165,7 +152,7 @@ static void tick()
             }
             else
             {
-                pause_engine = FALSE;
+                pause_engine = 0;
                 Outrun_init();
                 cannonball_state = STATE_GAME;
             }
@@ -213,6 +200,9 @@ static void main_loop()
 
     while (cannonball_state != STATE_QUIT)
     {
+		uint32_t start;
+		start = SDL_GetTicks();
+		
         Timer_start(&frame_time);
         tick();
         #ifdef COMPILE_SOUND_CODE
@@ -223,12 +213,10 @@ static void main_loop()
         deltaintegral  = (int) deltatime;
         t = Timer_get_ticks(&frame_time);
 
-        // Cap Frame Rate: Sleep Remaining Frame Time
-       
-       // Cap Frame Rate: Sleep Remaining Frame Time
+		// Cap Frame Rate: Sleep Remaining Frame Time
         if (t < deltatime)
         {
-            sleep((Uint32) (deltatime - t));
+            SDL_Delay((Uint32) (deltatime - t));
         }
         
         deltatime -= deltaintegral;
@@ -236,7 +224,6 @@ static void main_loop()
         if (Config_video.fps_count)
         {
             frame++;
-            // One second has elapsed
             if (Timer_get_ticks(&fps_count) >= 1000)
             {
                 cannonball_fps_counter = frame;
@@ -245,26 +232,23 @@ static void main_loop()
             }
         }
     }
-
-    quit_func(0);
 }
 
 int main(int argc, char* argv[])
 {
     // Initialize timer and video systems
-    //if( SDL_Init( SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) == -1 ) 
-    //{ 
-	//	fprintf(stderr, "SDL Initialization failed: %d\n", SDL_GetError());
-    //    return 1; 
-    //}
+	if ( SDL_Init( SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) == -1 ) 
+	{ 
+		fprintf(stderr, "SDL Initialization failed: %d\n", SDL_GetError());
+		return 1; 
+    }
 
     initTimer();
     
     TrackLoader_Create();
 
-
     // Load LayOut File
-    Boolean loaded = FALSE;
+    uint8_t loaded = 0;
     if (argc == 3 && strcmp(argv[1], "-file") == 0)
     {
         if (TrackLoader_set_layout_track(argv[2]))
@@ -290,7 +274,7 @@ int main(int argc, char* argv[])
  
         // Load fixed PCM ROM based on config
         if (Config_sound.fix_samples)
-            Roms_load_pcm_rom(TRUE);
+            Roms_load_pcm_rom(1);
 
         // Load patched widescreen tilemaps
         if (!OMusic_load_widescreen_map())
@@ -298,31 +282,27 @@ int main(int argc, char* argv[])
             fprintf(stderr, "Unable to load widescreen tilemaps.\n");
         }
 
-        
         Video_Create();
 
-        // Initialize SDL Video
-        if (!Video_init(&Config_video))
-            quit_func(1);
-
+        // Initialize SDL Video, Only allow to run it if it is init
+        if (Video_init(&Config_video))
+		{
 #ifdef COMPILE_SOUND_CODE
-        Audio_init();
+			Audio_init();
 #endif
-        cannonball_state = Config_menu.enabled ? STATE_INIT_MENU : STATE_INIT_GAME;
+			cannonball_state = Config_menu.enabled ? STATE_INIT_MENU : STATE_INIT_GAME;
 
-        // Initalize controls
-        Input_init(Config_controls.pad_id,
-                   Config_controls.keyconfig, Config_controls.padconfig, 
-                   Config_controls.analog,    Config_controls.axis, Config_controls.asettings);
+			// Initalize controls
+			Input_init(Config_controls.pad_id,
+					   Config_controls.keyconfig, Config_controls.padconfig, 
+					   Config_controls.analog,    Config_controls.axis, Config_controls.asettings);
 
 
-        main_loop();  // Loop until we quit the app
-    }
-    else
-    {
-        quit_func(1);
+			main_loop();  // Loop until we quit the app
+		}
     }
 
-    // Never Reached
+    Clear_Cannonball();
+
     return 0;
 }

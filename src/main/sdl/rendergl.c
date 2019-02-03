@@ -12,7 +12,7 @@
 
 #include "rendergl.h"
 #include "frontend/config.h"
-
+#include <stdint.h>
 #include "../globals.h"
 #include "../setup.h"
 #include <SDL.h>
@@ -76,10 +76,10 @@ uint32_t Render_screen_xoff, Render_screen_yoff;
 uint8_t  Render_Rshift, Render_Gshift, Render_Bshift;
 uint32_t Render_Rmask, Render_Gmask, Render_Bmask;
 
-Boolean Render_sdl_screen_size();
+uint8_t Render_sdl_screen_size();
 
 
-Boolean Render_init(int src_width, int src_height,
+uint8_t Render_init(int src_width, int src_height,
                     int scale,
                     int video_mode,
                     int scanlines)
@@ -91,7 +91,7 @@ Boolean Render_init(int src_width, int src_height,
 
     // Setup SDL Screen size
     if (!Render_sdl_screen_size())
-        return FALSE;
+        return 0;
 
     int flags = SDL_OPENGL;
 
@@ -103,23 +103,23 @@ Boolean Render_init(int src_width, int src_height,
         uint32_t h = (Render_scn_height << 16)  / src_height;
         Render_dst_width  = (Render_src_width  * my_min(w, h)) >> 16;
         Render_dst_height = (Render_src_height * my_min(w, h)) >> 16;
-        flags |= SDL_FULLSCREEN; // Set SDL flag
-        SDL_ShowCursor(FALSE);   // Don't show mouse cursor in full-screen mode
+        //flags |= SDL_FULLSCREEN; // Set SDL flag
+        SDL_ShowCursor(0);   // Don't show mouse cursor in full-screen mode
     }
     // Stretch screen. Lose original proportions
     else if (video_mode == VIDEO_MODE_STRETCH)
     {
         Render_dst_width  = Render_scn_width;
         Render_dst_height = Render_scn_height;
-        flags |= SDL_FULLSCREEN; // Set SDL flag
-        SDL_ShowCursor(FALSE);   // Don't show mouse cursor in full-screen mode
+        //flags |= SDL_FULLSCREEN; // Set SDL flag
+        SDL_ShowCursor(0);   // Don't show mouse cursor in full-screen mode
     }
     // Window Mode
     else
     {
         Render_scn_width  = Render_dst_width  = src_width  * scale;
         Render_scn_height = Render_dst_height = src_height * scale;
-        SDL_ShowCursor(TRUE);
+        SDL_ShowCursor(1);
     }
 
     // If we're not stretching the screen, centre the image
@@ -154,7 +154,7 @@ Boolean Render_init(int src_width, int src_height,
     if (!Render_surface || !available)
     {
         //std::cerr << "Video mode set failed: " << SDL_GetError() << std::endl;
-        return FALSE;
+        return 0;
     }
 
     if (Render_screen_pixels)
@@ -278,7 +278,7 @@ Boolean Render_init(int src_width, int src_height,
     glPopMatrix();
     glEndList();
 
-    return TRUE;
+    return 1;
 }
 
 void Render_disable()
@@ -287,17 +287,17 @@ void Render_disable()
     glDeleteTextures(Render_scanlines ? 2 : 1, Render_textures);
 }
 
-Boolean Render_start_frame()
+uint8_t Render_start_frame()
 {
     return !(SDL_MUSTLOCK(Render_surface) && SDL_LockSurface(Render_surface) < 0);
 }
 
-Boolean Render_finalize_frame()
+uint8_t Render_finalize_frame()
 {
     if (SDL_MUSTLOCK(Render_surface))
         SDL_UnlockSurface(Render_surface);
 
-    return TRUE;
+    return 1;
 }
 
 void Render_draw_frame(uint16_t* pixels)
@@ -322,7 +322,7 @@ void Render_draw_frame(uint16_t* pixels)
 
 
 // Setup screen size
-Boolean Render_sdl_screen_size()
+uint8_t Render_sdl_screen_size()
 {
     if (Render_orig_width == 0 || Render_orig_height == 0)
     {
@@ -331,7 +331,7 @@ Boolean Render_sdl_screen_size()
         if (!info)
         {
             //std::cerr << "Video query failed: " << SDL_GetError() << std::endl;
-            return FALSE;
+            return 0;
         }
         
         Render_orig_width  = info->current_w; 
@@ -341,7 +341,7 @@ Boolean Render_sdl_screen_size()
     Render_scn_width  = Render_orig_width;
     Render_scn_height = Render_orig_height;
 
-    return TRUE;
+    return 1;
 }
 
 // See: SDL_PixelFormat

@@ -13,20 +13,18 @@
     This is based upon code from the Atari800 emulator project.
     Copyright (c) 1998-2008 Atari800 development team
 ***************************************************************************/
-
 #include <SDL.h>
+#include <stdint.h>
 #include "sdl/audio.h"
 #include "frontend/config.h" // fps
-#include "engine/audio/OSoundInt.h"
+#include "engine/audio/osoundint.h"
 
-
+// Sample Rate. Can't be changed easily for now, due to lack of SDL resampling.
+const uint32_t AUDIO_FREQUENCY = REAL_AUDIO_FREQUENCY;
 
 #ifdef COMPILE_SOUND_CODE
 
-Boolean Audio_sound_enabled;
-
-// Sample Rate. Can't be changed easily for now, due to lack of SDL resampling.
-const uint32_t FREQ = 44100;
+uint8_t Audio_sound_enabled;
 
 // Stereo. Could be changed, requires some recoding.
 const uint32_t CHANNELS = 2;
@@ -39,10 +37,10 @@ const uint32_t BITS = 16;
 const uint32_t SAMPLES  = 1024;
 
 // Latency (in ms) and thus target buffer size
-static int SND_DELAY = 20;
+static uint32_t SND_DELAY = 20;
 
 // allowed "spread" between too many and too few samples in the buffer (ms)
-static int SND_SPREAD = 7;
+static uint32_t SND_SPREAD = 7;
     
 // Buffer used to mix PCM and YM channels together
 uint16_t* Audio_mix_buffer;
@@ -85,8 +83,6 @@ void Audio_init()
 
 void Audio_start_audio()
 {
-    
-    /*
     if (!Audio_sound_enabled)
     {
         if(SDL_Init(SDL_INIT_AUDIO) == -1) 
@@ -98,7 +94,7 @@ void Audio_start_audio()
         // SDL Audio Properties
         SDL_AudioSpec desired, obtained;
 
-        desired.freq     = FREQ;
+        desired.freq     = AUDIO_FREQUENCY;
         desired.format   = AUDIO_S16SYS;
         desired.channels = CHANNELS;
         desired.samples  = SAMPLES;
@@ -120,17 +116,17 @@ void Audio_start_audio()
         bytes_per_sample = CHANNELS * (BITS / 8);
 
         // Start Audio
-        Audio_sound_enabled = TRUE;
+        Audio_sound_enabled = 1;
 
         // how many fragments in the dsp buffer
         const int DSP_BUFFER_FRAGS = 5;
-        int specified_delay_samps = (FREQ * SND_DELAY) / 1000;
+        int specified_delay_samps = (AUDIO_FREQUENCY * SND_DELAY) / 1000;
         int dsp_buffer_samps = SAMPLES * DSP_BUFFER_FRAGS + specified_delay_samps;
         dsp_buffer_bytes = CHANNELS * dsp_buffer_samps * (BITS / 8);
         dsp_buffer = (uint8_t*)malloc(dsp_buffer_bytes);
 
         // Create Buffer For Mixing
-        uint16_t buffer_size = (FREQ / Config_fps) * CHANNELS;
+        uint16_t buffer_size = (AUDIO_FREQUENCY / Config_fps) * CHANNELS;
         Audio_mix_buffer = (uint16_t*)malloc(buffer_size * sizeof(uint16_t));
 
         Audio_clear_buffers();
@@ -139,15 +135,13 @@ void Audio_start_audio()
         SDL_PauseAudio(0);
     }
     
-    */
-    
-    Audio_sound_enabled = TRUE;
+    Audio_sound_enabled = 1;
 }
 
 void Audio_clear_buffers()
 {
     dsp_read_pos  = 0;
-    int specified_delay_samps = (FREQ * SND_DELAY) / 1000;
+    int specified_delay_samps = (AUDIO_FREQUENCY * SND_DELAY) / 1000;
     dsp_write_pos = (specified_delay_samps+SAMPLES) * bytes_per_sample;
     Audio_avg_gap = 0.0;
     Audio_gap_est = 0;
@@ -155,7 +149,7 @@ void Audio_clear_buffers()
     for (int i = 0; i < dsp_buffer_bytes; i++)
         dsp_buffer[i] = 0;
 
-    uint16_t buffer_size = (FREQ / Config_fps) * CHANNELS;
+    uint16_t buffer_size = (AUDIO_FREQUENCY / Config_fps) * CHANNELS;
     for (int i = 0; i < buffer_size; i++)
         Audio_mix_buffer[i] = 0;
 
@@ -166,7 +160,7 @@ void Audio_stop_audio()
 {
     if (Audio_sound_enabled)
     {
-        Audio_sound_enabled = FALSE;
+        Audio_sound_enabled = 0;
 
         SDL_PauseAudio(1);
         SDL_CloseAudio();
@@ -235,7 +229,7 @@ void Audio_tick()
     uint8_t* mbuf8 = (uint8_t*) Audio_mix_buffer;
 
     // produce samples from the sound emulation
-    bytes_per_ms = (bytes_per_sample) * (FREQ/1000.0);
+    bytes_per_ms = (bytes_per_sample) * (AUDIO_FREQUENCY/1000.0);
     bytes_written = (BITS == 8 ? samples_written : samples_written*2);
     
     SDL_LockAudio();
@@ -252,7 +246,7 @@ void Audio_tick()
         // then we allow the callback to run..
         SDL_UnlockAudio();
         // and delay until it runs and allows space.
-        sleep(1);
+        SDL_Delay(1);
         SDL_LockAudio();
         //printf("sound buffer overflow:%d %d\n",gap, dsp_buffer_bytes);
         gap = dsp_write_pos - dsp_read_pos;
@@ -295,11 +289,11 @@ double Audio_adjust_speed()
     double alpha = 2.0 / (1.0+40.0);
     int gap_too_small;
     int gap_too_large;
-    Boolean inited = FALSE;
+    uint8_t inited = 0;
 
     if (!inited) 
     {
-        inited = TRUE;
+        inited = 1;
         Audio_avg_gap = Audio_gap_est;
     }
     else 
@@ -307,8 +301,8 @@ double Audio_adjust_speed()
         Audio_avg_gap = Audio_avg_gap + alpha * (Audio_gap_est - Audio_avg_gap);
     }
 
-    gap_too_small = (SND_DELAY * FREQ * bytes_per_sample)/1000;
-    gap_too_large = ((SND_DELAY + SND_SPREAD) * FREQ * bytes_per_sample)/1000;
+    gap_too_small = (SND_DELAY * AUDIO_FREQUENCY * bytes_per_sample)/1000;
+    gap_too_large = ((SND_DELAY + SND_SPREAD) * AUDIO_FREQUENCY * bytes_per_sample)/1000;
     
     if (Audio_avg_gap < gap_too_small) 
     {
@@ -355,11 +349,11 @@ void Audio_load_wav(const char* filename)
         SDL_MixAudio(data_vol, data, length, SDL_MIX_MAXVOLUME / 2);
 
         // WAV File Needs Conversion To Target Format
-        if (wave.format != AUDIO_S16 || wave.channels != 2 || wave.freq != FREQ)
+        if (wave.format != AUDIO_S16 || wave.channels != 2 || wave.freq != AUDIO_FREQUENCY)
         {
             SDL_AudioCVT cvt;
             SDL_BuildAudioCVT(&cvt, wave.format, wave.channels, wave.freq,
-                                    AUDIO_S16,   CHANNELS,      FREQ);
+                                    AUDIO_S16,   CHANNELS,      AUDIO_FREQUENCY);
 
             cvt.buf = (uint8_t*) malloc(length*cvt.len_mult);
             memcpy(cvt.buf, data_vol, length);
@@ -399,7 +393,7 @@ void Audio_clear_wav()
     Audio_wavfile.length = 1;
     Audio_wavfile.data   = EMPTY_BUFFER;
     Audio_wavfile.pos    = 0;
-    Audio_wavfile.loaded = FALSE;
+    Audio_wavfile.loaded = 0;
 }
 
 // SDL Audio Callback Function

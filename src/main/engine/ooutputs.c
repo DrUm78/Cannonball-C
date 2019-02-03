@@ -18,7 +18,7 @@
 ***************************************************************************/
 
 #include <stdlib.h> // abs
-
+#include <stdint.h>
 #include "utils.h"
 
 #include "engine/ocrash.h"
@@ -67,14 +67,14 @@ int16_t motor_centre_pos;
 int16_t motor_x_change;
 
 uint16_t motor_state;
-Boolean motor_enabled = TRUE;
+uint8_t motor_enabled = 1;
 
 // 0x11: Motor Control Value
 int8_t motor_control;
 // 0x12: Movement (1 = Left, -1 = Right, 0 = None)
 int8_t motor_movement;
 // 0x14: Is Motor Centered
-Boolean is_centered;
+uint8_t is_centered;
 // 0x16: Motor X Change Latch
 int16_t motor_change_latch;
 // 0x18: Speed
@@ -84,7 +84,7 @@ int16_t curve;
 // 0x1E: Increment counter to index motor table for off-road/crash
 int16_t vibrate_counter;
 // 0x20: Last Motor X_Change > 8. No need to adjust further.
-Boolean was_small_change;
+uint8_t was_small_change;
 // 0x22: Adjusted movement value based on steering 1
 int16_t movement_adjust1;
 // 0x24: Adjusted movement value based on steering 2
@@ -136,13 +136,13 @@ void OOutputs_init()
     OOutputs_dig_out   = 0;
     motor_control      = 0;
     motor_movement     = 0;
-    is_centered        = FALSE;
+    is_centered        = 0;
     motor_change_latch = 0;
     speed              = 0;
     curve              = 0;
     counter            = 0;
     vibrate_counter    = 0;
-    was_small_change   = FALSE;
+    was_small_change   = 0;
     movement_adjust1   = 0;
     movement_adjust2   = 0;
     movement_adjust3   = 0;
@@ -200,7 +200,7 @@ void OOutputs_clear_digital(uint8_t output)
 // Source: 0x1885E
 // ------------------------------------------------------------------------------------------------
 
-Boolean OOutputs_diag_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets)
+uint8_t OOutputs_diag_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets)
 {
     switch (motor_state)
     {
@@ -217,7 +217,7 @@ Boolean OOutputs_diag_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_
             OHud_blit_text_new(col1, 20, "LIMIT B5 RIGHT", HUD_GREY);
             counter          = COUNTER_RESET;
             motor_centre_pos = 0;
-            motor_enabled    = TRUE;
+            motor_enabled    = 1;
             motor_state = STATE_LEFT;
             break;
 
@@ -301,7 +301,7 @@ void OOutputs_diag_right(int16_t input_motor, uint8_t hw_motor_limit)
     else
     {
         OHud_blit_text_new(col2, 11, "FAIL 2", 0x80);
-        motor_enabled = FALSE;
+        motor_enabled = 0;
         motor_state   = STATE_DONE;
         return;
     }
@@ -348,7 +348,7 @@ void OOutputs_diag_done()
 // Calibrate Motors
 // ------------------------------------------------------------------------------------------------
 
-Boolean OOutputs_calibrate_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets)
+uint8_t OOutputs_calibrate_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets)
 {
     switch (motor_state)
     {
@@ -362,7 +362,7 @@ Boolean OOutputs_calibrate_motor(int16_t input_motor, uint8_t hw_motor_limit, ui
             OHud_blit_text_new(col1, 14, "MOVE CENTRE -", HUD_GREY);
             counter          = 25;
             motor_centre_pos = 0;
-            motor_enabled    = TRUE;
+            motor_enabled    = 1;
             motor_state++;
             break;
 
@@ -396,10 +396,10 @@ Boolean OOutputs_calibrate_motor(int16_t input_motor, uint8_t hw_motor_limit, ui
             break;
 
         case STATE_EXIT:
-            return TRUE;
+            return 1;
     }
 
-    return FALSE;
+    return 0;
 }
 
 void OOutputs_calibrate_left(int16_t input_motor, uint8_t hw_motor_limit)
@@ -437,7 +437,7 @@ void OOutputs_calibrate_left(int16_t input_motor, uint8_t hw_motor_limit)
     {
         OHud_blit_text_new(col2, 10, "FAIL 2", HUD_GREY);
         OHud_blit_text_new(col2, 12, "FAIL 2", HUD_GREY);
-        motor_enabled = FALSE; 
+        motor_enabled = 0; 
         counter       = COUNTER_RESET;
         motor_state   = STATE_CENTRE;
     }
@@ -478,7 +478,7 @@ void OOutputs_calibrate_right(int16_t input_motor, uint8_t hw_motor_limit)
     else
     {
         OHud_blit_text_new(col2, 12, "FAIL 2", HUD_GREY);
-        motor_enabled = FALSE;
+        motor_enabled = 0;
         motor_state   = STATE_CENTRE;
         counter       = COUNTER_RESET;
     }
@@ -486,7 +486,7 @@ void OOutputs_calibrate_right(int16_t input_motor, uint8_t hw_motor_limit)
 
 void OOutputs_calibrate_centre(int16_t input_motor, uint8_t hw_motor_limit)
 {
-    Boolean fail = FALSE;
+    uint8_t fail = 0;
 
     if (hw_motor_limit & BIT_4) 
     {
@@ -498,7 +498,7 @@ void OOutputs_calibrate_centre(int16_t input_motor, uint8_t hw_motor_limit)
         else
         {
             OHud_blit_text_new(col2, 14, "FAIL SW", HUD_GREY);
-            fail = TRUE;
+            fail = 1;
             // Fall through to EEB6
         }  
     }
@@ -521,7 +521,7 @@ void OOutputs_calibrate_centre(int16_t input_motor, uint8_t hw_motor_limit)
     if (abs(motor_centre_pos - 0x80) > 0x20)
     {
         OHud_blit_text_new(col2, 14, "FAIL DIST", HUD_GREY);
-        motor_enabled = FALSE;
+        motor_enabled = 0;
     }
     else if (!fail)
     {
@@ -755,12 +755,12 @@ void OOutputs_car_stationary()
         if (!is_centered)
         {
             OOutputs_hw_motor_control = MOTOR_CENTRE;
-            is_centered      = TRUE;
+            is_centered      = 1;
         }
         else
         {
             OOutputs_hw_motor_control = MOTOR_OFF;
-            is_centered      = FALSE;
+            is_centered      = 0;
             OOutputs_done();
         }
     }
@@ -790,7 +790,7 @@ void OOutputs_adjust_motor()
     if (change <= 2)
     {
         motor_movement = 0;
-        is_centered    = TRUE;
+        is_centered    = 1;
     }
     // moving right
     else if (motor_movement < 0)
@@ -848,12 +848,12 @@ void OOutputs_done()
 {
     if (abs(motor_x_change) <= 8)
     {
-        was_small_change = TRUE;
+        was_small_change = 1;
         motor_control    = MOTOR_CENTRE;
     }
     else
     {
-        was_small_change = FALSE;
+        was_small_change = 0;
     }
 }
 
@@ -1029,7 +1029,7 @@ void OOutputs_do_vibrate_mini()
 // Source: 0x6F8C
 // ------------------------------------------------------------------------------------------------
 
-void OOutputs_coin_chute_out(CoinChute* chute, Boolean insert)
+void OOutputs_coin_chute_out(CoinChute* chute, uint8_t insert)
 {
     // Initalize counter if coin inserted
     chute->counter[2] = insert ? 1 : 0;

@@ -8,7 +8,7 @@
     See license.txt for more details.
 ***************************************************************************/
 
-
+#include <stdint.h>
 #include "main.h"
 #include "config.h"
 #include "globals.h"
@@ -16,8 +16,7 @@
 #include "utils.h"
 #include "xmlutils.h"
 #include "engine/ohiscore.h"
-#include "engine/audio/OSoundInt.h"
-
+#include "engine/audio/osoundint.h"
 
 menu_settings_t        Config_menu;
 video_settings_t       Config_video;
@@ -29,13 +28,41 @@ cannonboard_settings_t Config_cannonboard;
 uint16_t Config_s16_width;
 uint16_t Config_s16_height;
 uint16_t Config_s16_x_off;
-int Config_fps;
-int Config_tick_fps;
-int Config_cont_traffic;
+uint32_t Config_fps;
+uint32_t Config_tick_fps;
+uint32_t Config_cont_traffic;
+
+#define KEYBOARD_UP 273
+#define KEYBOARD_DOWN 274
+#define KEYBOARD_LEFT 276
+#define KEYBOARD_RIGHT 275
+#define KEYBOARD_LCTRL 306
+#define KEYBOARD_LALT 308
+#define KEYBOARD_LSHIFT 304
+#define KEYBOARD_RCTRL 305
+#define KEYBOARD_RETURN 13
+#define KEYBOARD_SPACE 13
+#define KEYBOARD_TAB 9
+#define KEYBOARD_BACKSPACE 8
+
+typedef enum rl_presses
+{
+    INGAME_INPUT_UP    = 0,
+    INGAME_INPUT_DOWN  = 1,
+    INGAME_INPUT_LEFT  = 2,
+    INGAME_INPUT_RIGHT = 3,
+    INGAME_INPUT_ACCEL = 4,
+    INGAME_INPUT_BRAKE = 5,
+    INGAME_INPUT_GEAR1 = 6,
+    INGAME_INPUT_GEAR2 = 7,
+    INGAME_INPUT_START = 8,
+    INGAME_INPUT_COIN  = 9,
+    INGAME_INPUT_MENU = 10,
+    INGAME_INPUT_VIEWPOINT = 11
+};
 
 void Config_init()
 {
-    
     // ------------------------------------------------------------------------
     // Menu Settings
     // ------------------------------------------------------------------------
@@ -50,19 +77,23 @@ void Config_init()
     Config_video.mode       = 1;
     Config_video.scale      = 0;
     Config_video.scanlines  = 0;
+#ifdef BITTBOY
     Config_video.fps        = 0;
-    Config_video.fps_count  = 1;
+#else
+    Config_video.fps        = 2;
+#endif
+    Config_video.fps_count  = 0;
     Config_video.widescreen = 0;
     Config_video.hires      = 0;
     Config_video.filtering  = 0;
-    Config_video.detailLevel = 1;
-
+    Config_video.detailLevel = 2;
+    
     Config_set_fps(Config_video.fps);
 
     // ------------------------------------------------------------------------
     // Sound Settings
     // ------------------------------------------------------------------------
-    Config_sound.enabled     = 0;
+    Config_sound.enabled     = 1;
     Config_sound.advertise   = 0;
     Config_sound.preview     = 0;
     Config_sound.fix_samples = 0;
@@ -70,18 +101,33 @@ void Config_init()
     Config_controls.gear          = 0;
     Config_controls.steer_speed   = 3;
     Config_controls.pedal_speed   = 4;
-    Config_controls.keyconfig[0]  = 273;
-    Config_controls.keyconfig[1]  = 274;
-    Config_controls.keyconfig[2]  = 276;
-    Config_controls.keyconfig[3]  = 275;
-    Config_controls.keyconfig[4]  = 122;
-    Config_controls.keyconfig[5]  = 120;
-    Config_controls.keyconfig[6]  = 32;
-    Config_controls.keyconfig[7]  = 32;
-    Config_controls.keyconfig[8]  = 49;
-    Config_controls.keyconfig[9]  = 53;
-    Config_controls.keyconfig[10] = 286;
-    Config_controls.keyconfig[11] = 304;
+#ifdef BITTBOY
+    Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
+    Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
+    Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
+    Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
+    Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
+    Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
+    Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_SPACE;
+    Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
+    Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
+    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
+    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_RCTRL;
+    Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
+#else
+    Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
+    Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
+    Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
+    Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
+    Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
+    Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
+    Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_TAB;
+    Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
+    Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
+    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
+    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_BACKSPACE;
+    Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
+#endif
     Config_controls.padconfig[0]  = 0;
     Config_controls.padconfig[1]  = 1;
     Config_controls.padconfig[2]  = 2;
@@ -145,10 +191,6 @@ void Config_init()
     Config_ttrial.traffic = 3;
 
     Config_cont_traffic   = 3;
-
-   
-
-
 }
 
 void Config_load(const char* filename)
@@ -302,7 +344,7 @@ void Config_load(const char* filename)
     XMLDoc_free(&doc);
 }
 
-Boolean Config_save(const char* filename)
+uint8_t Config_save(const char* filename)
 {
     XMLDoc saveDoc;
     XMLDoc_init(&saveDoc);
@@ -375,14 +417,14 @@ Boolean Config_save(const char* filename)
     if (!file)
     {
         fprintf(stderr, "Error: can't open %s for save\n", filename);
-        return FALSE;
+        return 0;
     }
 
-    XMLDoc_print(&saveDoc, file, "\n", "\t", FALSE, 0, 4);
+    XMLDoc_print(&saveDoc, file, "\n", "\t", 0, 0, 4);
     fclose(file);
     XMLDoc_free(&saveDoc);
 
-    return TRUE;
+    return 1;
 }
 
 
@@ -464,7 +506,7 @@ void Config_save_scores(const char* filename)
         return;
     }
 
-    XMLDoc_print(&saveDoc, file, "\n", "\t", FALSE, 0, 4);
+    XMLDoc_print(&saveDoc, file, "\n", "\t", 0, 0, 4);
     fclose(file);
     XMLDoc_free(&saveDoc);
 }
@@ -527,12 +569,12 @@ void Config_save_tiletrial_scores()
         return;
     }
 
-    XMLDoc_print(&saveDoc, file, "\n", "\t", FALSE, 0, 4);
+    XMLDoc_print(&saveDoc, file, "\n", "\t", 0, 0, 4);
     fclose(file);
     XMLDoc_free(&saveDoc);
 }
 
-Boolean Config_clear_scores()
+uint8_t Config_clear_scores()
 {
     // Init Default Hiscores
     OHiScore_init_def_scores();

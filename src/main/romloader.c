@@ -29,7 +29,7 @@ int RomLoader_filesize(const char* filename)
 
 void RomLoader_create(RomLoader* romLoader)
 {
-    romLoader->loaded = FALSE;
+    romLoader->loaded = 0;
 }
 
 void RomLoader_init(RomLoader* romLoader, uint32_t length)
@@ -48,7 +48,8 @@ int maxsize = 0;
 
 int RomLoader_load(RomLoader* romLoader, const char* filename, const int offset, const int length, const int expected_crc, const uint8_t interleave)
 {
-    int i = 0;
+	FILE* file;
+    uint32_t i = 0;
     if (maxsize < length)
     {
         maxsize = length;
@@ -59,7 +60,7 @@ int RomLoader_load(RomLoader* romLoader, const char* filename, const int offset,
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
     char bundlepath[PATH_MAX];
 
-    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)bundlepath, PATH_MAX))
+    if (!CFURLGetFileSystemRepresentation(resourcesURL, 1, (UInt8 *)bundlepath, PATH_MAX))
     {
         // error!
     }
@@ -69,25 +70,38 @@ int RomLoader_load(RomLoader* romLoader, const char* filename, const int offset,
 #endif
 
     // Open rom file
-    FILE* file = fopen(filename, "rb");
+	file = fopen(filename, "rb");
 
     if (!file)
     {
+#ifdef HOME_SUPPORT
+		char homepath[256];
+		snprintf(homepath, sizeof(homepath), "%s/.cannonball/%s", getenv("HOME"), filename);
+		file = fopen(homepath, "rb");
+		if (!file)
+		{
+			fprintf(stderr, "Cannot open rom: %s\n", filename);
+			romLoader->loaded = 0;
+			return 1; // fail
+		}
+#else
         fprintf(stderr, "Cannot open rom: %s\n", filename);
-        romLoader->loaded = FALSE;
+        romLoader->loaded = 0;
         return 1; // fail
+#endif
     }
 
     // Read file
     char* buffer = (char*) malloc(length);
     int read = fread(buffer, length, 1, file);
 
-    crc computed_crc = crcSlow(buffer, length);
+	/* This needs to be fixed or replaced. Looks like CRC checking isn't working at all - Gameblabla */
+    /*crc computed_crc = crcSlow(buffer, length);
 
     if (expected_crc != computed_crc)
     {
         fprintf(stderr, "Error: %s has incorrect checksum.\nExpected: %x Found: %x.\n", filename, expected_crc, computed_crc);
-    }
+    }*/
 
     // Interleave file as necessary
     for (i = 0; i < length; i++)
@@ -98,7 +112,7 @@ int RomLoader_load(RomLoader* romLoader, const char* filename, const int offset,
     // Clean Up
     free(buffer);
     fclose(file);
-    romLoader->loaded = TRUE;
+    romLoader->loaded = 1;
     return 0; // success
 }
 
@@ -110,7 +124,7 @@ int RomLoader_load_binary(RomLoader* romLoader, const char* filename)
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
     char bundlepath[PATH_MAX];
 
-    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)bundlepath, PATH_MAX))
+    if (!CFURLGetFileSystemRepresentation(resourcesURL, 1, (UInt8 *)bundlepath, PATH_MAX))
     {
         // error!
     }
@@ -127,9 +141,20 @@ int RomLoader_load_binary(RomLoader* romLoader, const char* filename)
 
     if (!file)
     {
+#ifdef HOME_SUPPORT
+		char homepath[256];
+		snprintf(homepath, sizeof(homepath), "%s/.cannonball/%s", getenv("HOME"), filename);
+		if (!file)
+		{
+			fprintf(stderr, "Error: cannot open file:  %s.\n", filename);
+			romLoader->loaded = 0;
+			return 1; // fail
+		}
+#else
         fprintf(stderr, "Error: cannot open file:  %s.\n", filename);
-        romLoader->loaded = FALSE;
+        romLoader->loaded = 0;
         return 1; // fail
+#endif
     }
 
     romLoader->length = RomLoader_filesize(filename);
@@ -142,7 +167,7 @@ int RomLoader_load_binary(RomLoader* romLoader, const char* filename)
     // Clean Up
     fclose(file);
 
-    romLoader->loaded = TRUE;
+    romLoader->loaded = 1;
     return 0; // success
 }
 

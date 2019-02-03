@@ -10,7 +10,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "hwaudio/segapcm.h"
 #include "hwaudio/ym2151.h"
 #include "engine/audio/commands.h"
@@ -18,7 +18,7 @@
 #define OSoundInt_PCM_RAM_SIZE 0x100
 
 // Note whether the game has booted
-extern Boolean OSoundInt_has_booted;
+extern uint8_t OSoundInt_has_booted;
 
 // [+0] Unused
 // [+1] Engine pitch high
@@ -29,7 +29,6 @@ extern Boolean OSoundInt_has_booted;
 // [+6] Traffic data #3 
 // [+7] Traffic data #4
 extern uint8_t OSoundInt_engine_data[8];
-
 
 void OSoundInt_init();
 void OSoundInt_reset();

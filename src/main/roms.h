@@ -6,7 +6,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "romloader.h"
 
 // Western ROMs
@@ -26,7 +26,7 @@ extern RomLoader Roms_j_rom1;
 extern RomLoader* Roms_rom0p;
 extern RomLoader* Roms_rom1p;
 
-Boolean Roms_load_revb_roms();
-Boolean Roms_load_japanese_roms();
-Boolean Roms_load_pcm_rom(Boolean);
+uint8_t Roms_load_revb_roms();
+uint8_t Roms_load_japanese_roms();
+uint8_t Roms_load_pcm_rom(uint8_t);
 

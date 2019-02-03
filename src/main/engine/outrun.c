@@ -6,7 +6,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "setup.h"
 #include "main.h"
 #include "trackloader.h"
@@ -53,12 +53,12 @@
 
 */
 
-Boolean Outrun_freeze_timer;
+uint8_t Outrun_freeze_timer;
 uint8_t Outrun_cannonball_mode;
 uint8_t Outrun_custom_traffic;
 time_trial_t Outrun_ttrial;
-Boolean Outrun_service_mode;
-Boolean Outrun_tick_frame;
+uint8_t Outrun_service_mode;
+uint8_t Outrun_tick_frame;
 uint32_t Outrun_tick_counter;
 int8_t Outrun_game_state;
 adr_t Outrun_adr;
@@ -77,7 +77,7 @@ void Outrun_jump_table(Packet* packet);
 void Outrun_init_jump_table();
 void Outrun_main_switch();
 void Outrun_controls();
-Boolean Outrun_decrement_timers();
+uint8_t Outrun_decrement_timers();
 void Outrun_init_motor_calibration();
 void Outrun_init_attract();
 void Outrun_tick_attract();
@@ -85,8 +85,8 @@ void Outrun_check_freeplay_start();
 
 void Outrun_init()
 {
-    Outrun_freeze_timer = Outrun_cannonball_mode == OUTRUN_MODE_TTRIAL ? TRUE : Config_engine.freeze_timer;
-    Video_enabled = FALSE;
+    Outrun_freeze_timer = Outrun_cannonball_mode == OUTRUN_MODE_TTRIAL ? 1 : Config_engine.freeze_timer;
+    Video_enabled = 0;
     Outrun_select_course(Config_engine.jap != 0, Config_engine.prototype != 0);
     Video_clear_text_ram();
 
@@ -109,7 +109,7 @@ void Outrun_boot()
     outils_reset_random_seed(); // Ensure we match the genuine boot up of the original game each time
 }
 
-void Outrun_tick(Packet* packet, Boolean tick_frame)
+void Outrun_tick(Packet* packet, uint8_t tick_frame)
 {
     Outrun_tick_frame = tick_frame;
     
@@ -124,7 +124,7 @@ void Outrun_tick(Packet* packet, Boolean tick_frame)
             if (mode > ROAD_VIEW_INCAR)
                 mode = ROAD_VIEW_ORIGINAL;
 
-            ORoad_set_view_mode(mode, FALSE);
+            ORoad_set_view_mode(mode, 0);
         }
     }
 
@@ -283,7 +283,7 @@ void Outrun_jump_table(Packet* packet)
         {
             if (OOutputs_calibrate_motor(packet->ai1, packet->mci, 0))
             {
-                Video_enabled     = FALSE;
+                Video_enabled     = 0;
                 Video_clear_text_ram();
                 ORoad_horizon_set = 0;
                 Outrun_boot();
@@ -338,7 +338,7 @@ void Outrun_main_switch()
             break;
 
         case GS_INIT_BEST1:
-            OFerrari_car_ctrl_active = FALSE;
+            OFerrari_car_ctrl_active = 0;
             OInitEngine_car_increment = 0;
             OFerrari_car_inc_old = 0;
             OStats_time_counter = 5;
@@ -363,7 +363,7 @@ void Outrun_main_switch()
 
         case GS_INIT_LOGO:
             Video_clear_text_ram();
-            OFerrari_car_ctrl_active = FALSE;
+            OFerrari_car_ctrl_active = 0;
             OInitEngine_car_increment = 0;
             OFerrari_car_inc_old = 0;
             OStats_time_counter = 5;
@@ -415,7 +415,7 @@ void Outrun_main_switch()
             //ROM:0000B3F0                 clr.l   (prev_game_time).l                  ; Reset overall game time
             //ROM:0000B3F6                 move.w  #-1,(ingame_active2).l
             Video_clear_text_ram();
-            OFerrari_car_ctrl_active = TRUE;
+            OFerrari_car_ctrl_active = 1;
             Outrun_init_jump_table();
             OInitEngine_init(Outrun_cannonball_mode == OUTRUN_MODE_TTRIAL ? Outrun_ttrial.level : 0);
             // Timing Hack to ensure horizon is correct
@@ -446,7 +446,7 @@ void Outrun_main_switch()
             OHud_blit_text1(TEXT1_CLEAR_START);
             OHud_blit_text1(TEXT1_CLEAR_CREDITS);
             OSoundInt_queue_sound(sound_INIT_CHEERS);
-            Video_enabled = TRUE;
+            Video_enabled = 1;
             Outrun_game_state = GS_START1;
             OHud_draw_main_hud();
             // fall through
@@ -507,7 +507,7 @@ void Outrun_main_switch()
         case GS_INIT_GAMEOVER:
             if (Outrun_cannonball_mode != OUTRUN_MODE_TTRIAL)
             {
-                OFerrari_car_ctrl_active = FALSE; // -1
+                OFerrari_car_ctrl_active = 0; // -1
                 OInitEngine_car_increment = 0;
                 OFerrari_car_inc_old = 0;
                 OStats_time_counter = 3;
@@ -516,7 +516,7 @@ void Outrun_main_switch()
             }
             else
             {
-                OHud_blit_text_big(7, Outrun_ttrial.new_high_score ? "NEW RECORD" : "BAD LUCK", FALSE);
+                OHud_blit_text_big(7, Outrun_ttrial.new_high_score ? "NEW RECORD" : "BAD LUCK", 0);
 
                 OHud_blit_text1(TEXT1_LAPTIME1);
                 OHud_blit_text1(TEXT1_LAPTIME2);
@@ -571,7 +571,7 @@ void Outrun_main_switch()
         // Best OutRunners / Score Entry
         // ----------------------------------------------------------------------------------------
         case GS_INIT_BEST2:
-            ORoad_set_view_mode(ROAD_VIEW_ORIGINAL, TRUE);
+            ORoad_set_view_mode(ROAD_VIEW_ORIGINAL, 1);
             // bsr.w   EndGame
             OSprites_disable_sprites();
             OTraffic_disable_traffic();
@@ -583,7 +583,7 @@ void Outrun_main_switch()
             OCrash_crash_counter = 0;
             OCrash_skid_counter  = 0;
             OCrash_spin_control1 = 0;
-            OFerrari_car_ctrl_active = FALSE; // -1
+            OFerrari_car_ctrl_active = 0; // -1
             OInitEngine_car_increment = 0;
             OFerrari_car_inc_old = 0;
             OStats_time_counter = 0x30;
@@ -605,7 +605,7 @@ void Outrun_main_switch()
             if (Outrun_decrement_timers())
             {
                 //ROM:0000B700                 bclr    #5,(ppi1_value).l                   ; Turn screen off (not activated until PPI written to)
-                OFerrari_car_ctrl_active = TRUE; // 0 : Allow road updates
+                OFerrari_car_ctrl_active = 1; // 0 : Allow road updates
                 Outrun_init_jump_table();
                 OInitEngine_init(Outrun_cannonball_mode == OUTRUN_MODE_TTRIAL ? Outrun_ttrial.level : 0);
                 //ROM:0000B716                 bclr    #0,(byte_260550).l
@@ -706,7 +706,7 @@ void Outrun_init_jump_table()
     OOutputs_init();
 
     HWTiles_set_x_clamp(HWTILES_RIGHT);
-    HWSprites_set_x_clip(FALSE);
+    HWSprites_set_x_clip(0);
 }
 
 // -------------------------------------------------------------------------------
@@ -717,18 +717,18 @@ void Outrun_init_jump_table()
 // Returns true if timer expired.
 // Source: 0xB736
 // -------------------------------------------------------------------------------
-Boolean Outrun_decrement_timers()
+uint8_t Outrun_decrement_timers()
 {
     // Cheat
     if (Outrun_freeze_timer && Outrun_game_state == GS_INGAME)
-        return FALSE;
+        return 0;
 
     // Correct count-down timer running fast at 1/29th (3%)
     // Fix timer counting extra second
     if (Config_engine.fix_timer)
     {
         if (--OStats_frame_counter > 0)
-            return FALSE;
+            return 0;
 
         OStats_frame_counter = OStats_frame_reset;
         OStats_time_counter  = outils_bcd_sub(1, OStats_time_counter);
@@ -742,7 +742,7 @@ Boolean Outrun_decrement_timers()
     else
     {
         if (--OStats_frame_counter >= 0)
-            return FALSE;
+            return 0;
 
         OStats_frame_counter = OStats_frame_reset;
         OStats_time_counter  = outils_bcd_sub(1, OStats_time_counter);
@@ -762,12 +762,12 @@ void Outrun_init_motor_calibration()
     OOutputs_init();
 
     HWTiles_set_x_clamp(HWTILES_RIGHT);
-    HWSprites_set_x_clip(FALSE);
+    HWSprites_set_x_clip(0);
 
     OTiles_fill_tilemap_color(0x4F60); // Fill Tilemap Light Blue
 
-    Video_enabled        = TRUE;
-    OSoundInt_has_booted = TRUE;
+    Video_enabled        = 1;
+    OSoundInt_has_booted = 1;
 
     ORoad_init();
     ORoad_horizon_set    = 1;
@@ -790,9 +790,9 @@ void Outrun_init_motor_calibration()
 
 void Outrun_init_attract()
 {
-    Video_enabled             = TRUE;
-    OSoundInt_has_booted      = TRUE;
-    OFerrari_car_ctrl_active  = TRUE;
+    Video_enabled             = 1;
+    OSoundInt_has_booted      = 1;
+    OFerrari_car_ctrl_active  = 1;
     OFerrari_car_inc_old      = car_inc_bak >> 16;
     OInitEngine_car_increment = car_inc_bak;
     OStats_time_counter       = Config_engine.new_attract ? 0x80 : 0x15;
@@ -819,7 +819,7 @@ void Outrun_tick_attract()
             attract_counter = 0;
             if (++attract_view > 2)
                 attract_view = 0;
-            Boolean snap = VIEWS[attract_view] == ROAD_VIEW_INCAR;
+            uint8_t snap = VIEWS[attract_view] == ROAD_VIEW_INCAR;
             ORoad_set_view_mode(VIEWS[attract_view], snap);
         }
     }
@@ -852,8 +852,8 @@ void Outrun_check_freeplay_start()
 
 void Outrun_init_best_outrunners()
 {
-    Video_enabled = FALSE;
-    HWSprites_set_x_clip(FALSE); // Stop clipping in wide-screen mode.
+    Video_enabled = 0;
+    HWSprites_set_x_clip(0); // Stop clipping in wide-screen mode.
     OTiles_fill_tilemap_color(0); // Fill Tilemap Black
     OSprites_disable_sprites();
     ORoad_horizon_base = 0x154;
@@ -866,7 +866,7 @@ void Outrun_init_best_outrunners()
 // Remap ROM addresses and select course.
 // -------------------------------------------------------------------------------
 
-void Outrun_select_course(Boolean jap, Boolean prototype)
+void Outrun_select_course(uint8_t jap, uint8_t prototype)
 {
     if (jap)
     {

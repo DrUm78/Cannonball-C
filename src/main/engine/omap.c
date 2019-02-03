@@ -17,12 +17,12 @@
 #include "engine/otiles.h"
 #include "engine/otraffic.h"
 #include "engine/ostats.h"
-
+#include <stdint.h>
 
 // Position of Ferrari in Jump Table
 const uint8_t MAP_SPRITE_FERRARI = 25;
 
-Boolean OMap_init_sprites;
+uint8_t OMap_init_sprites;
 
 // Total sprite pieces that comprise course map. 3c
 const static uint8_t MAP_PIECES = 0x3C;
@@ -84,7 +84,7 @@ void OMap_move_mini_car(oentry*);
 
 void OMap_init()
 {
-    OFerrari_car_ctrl_active = FALSE; // -1
+    OFerrari_car_ctrl_active = 0; // -1
     Video_clear_text_ram();
     OSprites_disable_sprites();
     OTraffic_disable_traffic();
@@ -96,7 +96,7 @@ void OMap_init()
     ORoad_road_ctrl           = ROAD_BOTH_P0;
     ORoad_horizon_base        = -0x3FF;
     OTiles_fill_tilemap_color(0xABD); //  Paint pinkish colour on tilemap 16
-    OMap_init_sprites = TRUE;
+    OMap_init_sprites = 1;
 }
 
 // Process route through levels
@@ -115,7 +115,7 @@ void OMap_tick()
     if (OMap_init_sprites)
     {
         OMap_load_sprites();
-        OMap_init_sprites = FALSE;
+        OMap_init_sprites = 0;
         return;
     }
 
@@ -123,7 +123,7 @@ void OMap_tick()
     {
         // Initialise Route Info
         case MAP_INIT:
-            HWSprites_set_x_clip(FALSE); // Don't clip the area in wide-screen mode
+            HWSprites_set_x_clip(0); // Don't clip the area in wide-screen mode
             map_route  = RomLoader_read8(&Roms_rom0, MAP_ROUTE_LOOKUP + OStats_routes[1]);
             map_pos    = 0;
             map_stage1 = 0;

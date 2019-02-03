@@ -20,7 +20,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/oferrari.h"
 #include "engine/oinputs.h"
 #include "engine/olevelobjs.h"
@@ -141,7 +141,7 @@ void OCrash_init(oentry* f, oentry* s, oentry* p1, oentry* p1s, oentry* p2, oent
     OCrash_function_pass2 = &OCrash_do_crash_passengers;
 }
 
-Boolean OCrash_is_flip()
+uint8_t OCrash_is_flip()
 {
     return OCrash_crash_counter && crash_type == CRASH_FLIP;
 }
@@ -561,7 +561,7 @@ void OCrash_end_collision()
     
     OFerrari_spr_ferrari->x = 0;
     OFerrari_spr_ferrari->y = 221;
-    OFerrari_car_ctrl_active = TRUE;
+    OFerrari_car_ctrl_active = 1;
     OFerrari_car_state = CAR_NORMAL;
     OLevelObjs_spray_counter = 0;
     OCrash_crash_z = 0;
@@ -590,7 +590,7 @@ void OCrash_end_collision()
 // Source: 0x12BE
 void OCrash_do_bump()
 {
-    OFerrari_car_ctrl_active = FALSE;   // Disable user control of car
+    OFerrari_car_ctrl_active = 0;   // Disable user control of car
     OCrash_spr_ferrari->zoom = 0x80;           // Set Entry Number For Zoom Lookup Table
     OCrash_spr_ferrari->priority = 0x1FD;
     
@@ -861,14 +861,14 @@ void OCrash_trigger_smoke()
 // Source: 0x1870
 void OCrash_post_flip_anim()
 {
-    OFerrari_car_ctrl_active = FALSE;  // Car and road updates disabled
+    OFerrari_car_ctrl_active = 0;  // Car and road updates disabled
     if (--crash_delay > 0)
     {
         OCrash_done(OCrash_spr_ferrari);
         return;
     }
 
-    OFerrari_car_ctrl_active = TRUE;
+    OFerrari_car_ctrl_active = 1;
     OCrash_crash_state = 6; // Denote pan camera to track centre
     
     int16_t road_width = ORoad_road_width >> 16;
@@ -907,7 +907,7 @@ void OCrash_post_flip_anim()
 // Source: 0x18EC
 void OCrash_pan_camera()
 {
-    OFerrari_car_ctrl_active = TRUE;
+    OFerrari_car_ctrl_active = 1;
 
     OInitEngine_car_x_pos += camera_xinc;
 

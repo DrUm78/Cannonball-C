@@ -4,6 +4,7 @@
 #include "frontend/config.h"
 
 #include <string.h>
+#include <stdint.h>
 
 /***************************************************************************
     Video Emulation: OutRun Tilemap Hardware.
@@ -161,7 +162,7 @@ void HWTiles_render8x8_tile_mask_clip_hires(
 
 void HWTiles_Create(void)
 {
-    int i;
+    uint8_t i;
     for (i = 0; i < 2; i++)
         HWTiles_tile_banks[i] = i;
 
@@ -170,14 +171,13 @@ void HWTiles_Create(void)
 
 void HWTiles_Destroy(void)
 {
-
 }
 
 // Convert S16 tiles to a more useable format
-void HWTiles_init(uint8_t* src_tiles, const Boolean hires)
+void HWTiles_init(uint8_t* src_tiles, const uint8_t hires)
 {
-    int i;
-    int ii;
+    uint32_t i;
+    uint8_t ii;
     if (src_tiles)
     {
         for (i = 0; i < TILES_LENGTH; i++)
@@ -290,7 +290,7 @@ void HWTiles_render_all_tiles(uint16_t* buf)
 
 void HWTiles_render_tile_layer(uint16_t* buf, uint8_t page_index, uint8_t priority_draw)
 {
-    int my, mx;
+    uint8_t my, mx;
     int16_t Colour, x, y, Priority = 0;
 
     uint16_t ActPage = 0;

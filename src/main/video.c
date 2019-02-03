@@ -8,8 +8,8 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
-#include "Video.h"
+#include <stdint.h>
+#include "video.h"
 #include "setup.h"
 #include "globals.h"
 
@@ -19,16 +19,10 @@
 #include "sdl/rendersw.h"
 #endif
 
-    
 uint16_t *Video_pixels = NULL;
-Boolean Video_enabled;
-
-
-
-    
+uint8_t Video_enabled;
 uint8_t palette[S16_PALETTE_ENTRIES * 2]; // 2 Bytes Per Palette Entry
 void Video_refresh_palette(uint32_t);
-
 
 void Video_Create(void)
 {
@@ -78,7 +72,7 @@ int Video_init(video_settings_t* settings)
         Roms_road.rom = NULL;
     }
 
-    Video_enabled = TRUE;
+    Video_enabled = 1;
     return 1;
 }
 
@@ -104,7 +98,6 @@ int Video_set_video_mode(video_settings_t* settings)
         Config_s16_x_off = 0;
     }
 
-
     Config_s16_height = S16_HEIGHT;
 
     // Internal video buffer is doubled in hi-res mode.
@@ -127,10 +120,8 @@ int Video_set_video_mode(video_settings_t* settings)
 
 void Video_draw_frame()
 {
-    
-    int i;
+	uint32_t i;
  
-
     if (!Video_enabled)
     {
         // Fill with black Video_pixels
@@ -142,13 +133,12 @@ void Video_draw_frame()
         // OutRun Hardware Video Emulation
         HWTiles_update_tile_values();
         HWRoad_render_background(Video_pixels);
- 
         if (Config_video.detailLevel == 2)        
         {
-            HWTiles_render_tile_layer(Video_pixels, 1, 0);      // background layer
+			/* This needs to be fixed. Clouds are not displayed properly. */
+            //HWTiles_render_tile_layer(Video_pixels, 1, 0);      // background layer
             HWTiles_render_tile_layer(Video_pixels, 0, 0);      // foreground layer
         }
-        
         
         HWRoad_render_foreground(Video_pixels);
         HWSprites_render(8);
@@ -351,12 +341,11 @@ uint32_t Video_read_pal32(uint32_t* palAddr)
 // Convert internal System 16 RRRR GGGG BBBB format palette to Video_renderer output format
 void Video_refresh_palette(uint32_t palAddr)
 {
-    palAddr &= ~1;
-    uint32_t a = (palette[palAddr] << 8) | palette[palAddr + 1];
-    uint32_t r = (a & 0x000f) << 1; // r rrr0
-    uint32_t g = (a & 0x00f0) >> 3; // g ggg0
-    uint32_t b = (a & 0x0f00) >> 7; // b bbb0
-     
+	palAddr &= ~1;
+	uint32_t a = (palette[palAddr] << 8) | palette[palAddr + 1];
+	uint32_t r = (a & 0x000f) << 1; // r rrr0
+	uint32_t g = (a & 0x00f0) >> 3; // g ggg0
+	uint32_t b = (a & 0x0f00) >> 7; // b bbb0
 
-    Render_convert_palette(palAddr, r, g, b);
+	Render_convert_palette(palAddr, r, g, b);
 }

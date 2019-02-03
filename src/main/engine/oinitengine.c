@@ -12,7 +12,7 @@
 ***************************************************************************/
 
 #include "trackloader.h"
-
+#include <stdint.h>
 #include "engine/oanimseq.h"
 #include "engine/obonus.h"
 #include "engine/ocrash.h"
@@ -32,7 +32,7 @@
 
 
 int16_t OInitEngine_camera_x_off;
-Boolean OInitEngine_ingame_engine;
+uint8_t OInitEngine_ingame_engine;
 int16_t OInitEngine_ingame_counter;
 uint16_t OInitEngine_rd_split_state;
 int16_t OInitEngine_road_type;
@@ -96,7 +96,7 @@ void OInitEngine_bonus5();
 void OInitEngine_bonus6();
 void OInitEngine_reload_stage1();
 void OInitEngine_init_split_next_level();
-void OInitEngine_test_bonus_mode(Boolean);
+void OInitEngine_test_bonus_mode(uint8_t);
 
 // Continuous Mode Level Ordering
 const static uint8_t CONTINUOUS_LEVELS[] = {0, 0x8, 0x9, 0x10, 0x11, 0x12, 0x18, 0x19, 0x1A, 0x1B, 0x20, 0x21, 0x22, 0x23, 0x24};
@@ -107,7 +107,7 @@ void OInitEngine_init(int8_t level)
 {
     OStats_game_completed  = 0;
 
-    OInitEngine_ingame_engine          = FALSE;
+    OInitEngine_ingame_engine          = 0;
     OInitEngine_ingame_counter         = 0;
     OStats_cur_stage       = 0;
     ORoad_stage_lookup_off = level ? level : 0;
@@ -177,7 +177,7 @@ void OInitEngine_setup_stage1()
     OInitEngine_checkpoint_marker = 0;              // Denote not past checkpoint marker
     OTraffic_set_max_traffic();         // Set Number Of Enemy Cars Based On Dip Switches
     OStats_clear_route_info();
-    OSmoke_setup_smoke_sprite(TRUE);
+    OSmoke_setup_smoke_sprite(1);
 }
 
 // Initialise Master Segment Address For Stage
@@ -525,7 +525,7 @@ void OInitEngine_check_stage()
             OHud_blit_text1(TEXT1_LAPTIME2);
             OHud_draw_lap_timer(0x110554, laptimes, OStats_lap_ms[laptimes[2]]);
 
-            Outrun_ttrial.new_high_score = TRUE;
+            Outrun_ttrial.new_high_score = 1;
         }
 
         if (Outrun_game_state == GS_INGAME)
@@ -569,7 +569,7 @@ void OInitEngine_check_stage()
             OTiles_set_vertical_swap(); // Tell tilemap to v-scroll off/on
 
             // Reload smoke data
-            OSmoke_setup_smoke_sprite(TRUE);
+            OSmoke_setup_smoke_sprite(1);
 
             // Update palette
             OInitEngine_end_stage_props |= BIT_1; // Don't bump stage offset when fetching next palette
@@ -636,7 +636,7 @@ void OInitEngine_reload_stage1()
     OInitEngine_end_stage_props |= BIT_1; // Loop back to stage 1 (Used by tilemap code)
     OInitEngine_end_stage_props |= BIT_2;
     OInitEngine_end_stage_props |= BIT_3;
-    OSmoke_setup_smoke_sprite(TRUE);
+    OSmoke_setup_smoke_sprite(1);
     OInitEngine_init_split_next_level();
 }
 
@@ -992,15 +992,15 @@ void OInitEngine_init_crash_bonus()
                     {
                         OCrash_spin_control1 = 1;
                         OCrash_skid_counter_bak = OCrash_skid_counter;
-                        OInitEngine_test_bonus_mode(TRUE); // 9924 fall through
+                        OInitEngine_test_bonus_mode(1); // 9924 fall through
                         return;
                     }
-                    OInitEngine_test_bonus_mode(FALSE); // finalise skid               
+                    OInitEngine_test_bonus_mode(0); // finalise skid               
                     return;
                 }
                 else
                 {
-                    OInitEngine_test_bonus_mode(TRUE); // test_bonus_mode
+                    OInitEngine_test_bonus_mode(1); // test_bonus_mode
                     return;
                 }
             }
@@ -1014,7 +1014,7 @@ void OInitEngine_init_crash_bonus()
         {
             OCrash_enable();
         }
-        OInitEngine_test_bonus_mode(FALSE); // finalise skid
+        OInitEngine_test_bonus_mode(0); // finalise skid
         return;
     }
     else if (OCrash_spin_control1 == 1)
@@ -1022,24 +1022,24 @@ void OInitEngine_init_crash_bonus()
         // 98c0
         OCrash_spin_control1 = 2;
         OCrash_enable();
-        OInitEngine_test_bonus_mode(FALSE); // finalise skid
+        OInitEngine_test_bonus_mode(0); // finalise skid
         return;
     }
 
     // 0x9924: Section Of Code
     if (OCrash_coll_count1 == OCrash_coll_count2) 
     {
-        OInitEngine_test_bonus_mode(TRUE);  // test_bonus_mode
+        OInitEngine_test_bonus_mode(1);  // test_bonus_mode
     }
     else
     {
         OCrash_enable();
-        OInitEngine_test_bonus_mode(FALSE); // finalise skid
+        OInitEngine_test_bonus_mode(0); // finalise skid
     }
 }
 
 // Source: 0x993C
-void OInitEngine_test_bonus_mode(Boolean do_bonus_check)
+void OInitEngine_test_bonus_mode(uint8_t do_bonus_check)
 {
     // Bonus checking code 
     if (do_bonus_check && OBonus_bonus_control)

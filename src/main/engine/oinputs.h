@@ -9,7 +9,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "sdl/input.h"
 #include "outrun.h"
 
@@ -32,7 +32,7 @@ extern int16_t OInputs_acc_adjust;
 extern int16_t OInputs_brake_adjust;
     
 // True = High Gear. False = Low Gear.
-extern Boolean OInputs_gear;
+extern uint8_t OInputs_gear;
 
 void OInputs_init();
 void OInputs_tick(Packet* packet);
@@ -40,7 +40,7 @@ void OInputs_adjust_inputs();
 void OInputs_do_gear();
 uint8_t OInputs_do_credits();
 
-Boolean OInputs_is_analog_l();
-Boolean OInputs_is_analog_r();
-Boolean OInputs_is_analog_select();
+uint8_t OInputs_is_analog_l();
+uint8_t OInputs_is_analog_r();
+uint8_t OInputs_is_analog_select();
 

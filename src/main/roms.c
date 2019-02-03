@@ -5,7 +5,7 @@
     See license.txt for more details.
 ***************************************************************************/
 
-#include "stdint.h"
+#include <stdint.h>
 #include "roms.h"
 
 RomLoader Roms_rom0;
@@ -24,7 +24,7 @@ int jap_rom_status = -1;
 
 
 
-Boolean Roms_load_revb_roms()
+uint8_t Roms_load_revb_roms()
 {
     // If incremented, a rom has failed to load.
     int status = 0;
@@ -93,7 +93,7 @@ Boolean Roms_load_revb_roms()
     return status == 0;
 }
 
-Boolean Roms_load_japanese_roms()
+uint8_t Roms_load_japanese_roms()
 {
     // Only attempt to initalize the arrays once.
     if (jap_rom_status == -1)
@@ -120,7 +120,7 @@ Boolean Roms_load_japanese_roms()
     return jap_rom_status == 0;
 }
 
-Boolean Roms_load_pcm_rom(Boolean fixed_rom)
+uint8_t Roms_load_pcm_rom(uint8_t fixed_rom)
 {
     int status = 0;
 

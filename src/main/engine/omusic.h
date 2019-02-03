@@ -8,14 +8,14 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 
 // Music Track Selected By Player
 extern uint8_t OMusic_music_selected;
 
-Boolean OMusic_load_widescreen_map();
+uint8_t OMusic_load_widescreen_map();
 void OMusic_enable();
 void OMusic_disable();
 void OMusic_tick();

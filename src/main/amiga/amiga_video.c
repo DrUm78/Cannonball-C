@@ -1,4 +1,4 @@
-
+#include <stdint.h>
 #include <exec/exec.h>
 #include <dos/dos.h>
 #include <graphics/gfx.h>
@@ -164,11 +164,11 @@ void start_rtg()
                         SA_Height,240,
                         SA_Type, CUSTOMSCREEN,
                         SA_Overscan, OSCAN_TEXT,
-                        SA_Quiet,TRUE,
-                        SA_ShowTitle, FALSE,
-                        SA_Draggable, FALSE,
-                        SA_Exclusive, TRUE,
-                        SA_AutoScroll, FALSE,                     
+                        SA_Quiet,1,
+                        SA_ShowTitle, 0,
+                        SA_Draggable, 0,
+                        SA_Exclusive, 1,
+                        SA_AutoScroll, 0,                     
                         TAG_END);
     
     
@@ -178,14 +178,14 @@ void start_rtg()
             			WA_Width, 320,
             			WA_Height, 240,
             			WA_Title, NULL,
-    					SA_AutoScroll, FALSE,
+    					SA_AutoScroll, 0,
             			WA_CustomScreen, (ULONG)_hardwareScreen,
-            			WA_Backdrop, TRUE,
-            			WA_Borderless, TRUE,
-            			WA_DragBar, FALSE,
-            			WA_Activate, TRUE,
-            			WA_SimpleRefresh, TRUE,
-            			WA_NoCareRefresh, TRUE, 
+            			WA_Backdrop, 1,
+            			WA_Borderless, 1,
+            			WA_DragBar, 0,
+            			WA_Activate, 1,
+            			WA_SimpleRefresh, 1,
+            			WA_NoCareRefresh, 1, 
                         WA_IDCMP,           IDCMP_RAWKEY|IDCMP_MOUSEBUTTONS|IDCMP_MOUSEMOVE,   
                   	    TAG_END);
     
@@ -214,11 +214,11 @@ void start_aga()
                      SA_Height,256,
                      SA_Type, CUSTOMSCREEN,
                      SA_Overscan, OSCAN_TEXT,
-                     SA_Quiet,TRUE,
-                     SA_ShowTitle, FALSE,
-                     SA_Draggable, FALSE,
-                     SA_Exclusive, TRUE,
-                     SA_AutoScroll, FALSE,
+                     SA_Quiet,1,
+                     SA_ShowTitle, 0,
+                     SA_Draggable, 0,
+                     SA_Exclusive, 1,
+                     SA_AutoScroll, 0,
                      TAG_END);
     
     
@@ -236,16 +236,16 @@ void start_aga()
             			WA_Width, 320,
             			WA_Height, 256,
             			WA_Title, NULL,
-    					SA_AutoScroll, FALSE,
+    					SA_AutoScroll, 0,
             			WA_CustomScreen, (ULONG)_hardwareScreen,
-            			WA_Backdrop, TRUE,
-            			WA_Borderless, TRUE,
-            			WA_DragBar, FALSE,
-            			WA_Activate, TRUE,
-            			WA_SimpleRefresh, TRUE,
-            			WA_NoCareRefresh, TRUE,
-            			WA_ReportMouse, TRUE,
-            			WA_RMBTrap, TRUE,
+            			WA_Backdrop, 1,
+            			WA_Borderless, 1,
+            			WA_DragBar, 0,
+            			WA_Activate, 1,
+            			WA_SimpleRefresh, 1,
+            			WA_NoCareRefresh, 1,
+            			WA_ReportMouse, 1,
+            			WA_RMBTrap, 1,
                   	    WA_IDCMP,  IDCMP_RAWKEY | IDCMP_MOUSEMOVE | IDCMP_DELTAMOVE | IDCMP_MOUSEBUTTONS,
                   	    TAG_END);
     

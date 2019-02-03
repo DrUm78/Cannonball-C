@@ -21,6 +21,7 @@
 #include "engine/osprites.h"
 #include "engine/otraffic.h"
 #include "engine/ozoom_lookup.h"
+#include <stdint.h>
 
 uint8_t OSprites_no_sprites;
 oentry OSprites_jump_table[JUMP_ENTRIES_TOTAL]; 
@@ -45,7 +46,7 @@ static const uint32_t SPRITE_RAM = 0x130000;
 static const uint32_t PAL_SPRITES = 0x121000;
 
 // Denote whether to swap sprite ram
-Boolean do_sprite_swap;
+uint8_t do_sprite_swap;
 
 // Store the next available sprite colour palette (0 - 7F)
 uint8_t spr_col_pal;
@@ -168,7 +169,7 @@ void OSprites_init()
     OSprites_seg_spr_offset1     = 0;
     OSprites_seg_spr_addr        = 0;
 
-    do_sprite_swap      = FALSE;
+    do_sprite_swap      = 0;
     OSprites_sprite_scroll_speed = 0;
     OSprites_shadow_offset       = 0;
     OSprites_sprite_count        = 0;
@@ -184,7 +185,7 @@ void OSprites_update_sprites()
 {
 	if (do_sprite_swap)
 	{
-        do_sprite_swap = FALSE;
+        do_sprite_swap = 0;
         HWSprites_swap();
         OSprites_copy_palette_data();
 	}
@@ -573,7 +574,7 @@ void OSprites_finalise_sprites()
     OSprites_spr_cnt_main = OSprites_spr_cnt_shadow = 0;
 
     // Ready to swap buffer and blit
-    do_sprite_swap = TRUE;
+    do_sprite_swap = 1;
 }
 
 // Copy Sprite Data to Sprite RAM 

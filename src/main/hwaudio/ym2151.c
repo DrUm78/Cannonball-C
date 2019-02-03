@@ -9,13 +9,12 @@
     
     See http://mamedev.org/source/docs/license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>  // For memset on GCC
 
 #include "hwaudio/ym2151.h"
-
 
 const static uint8_t YM_MONO             = 1;
 const static uint8_t YM_STEREO           = 2;
@@ -23,7 +22,7 @@ const static uint8_t YM_STEREO           = 2;
 const static uint8_t YM_LEFT             = 0;
 const static uint8_t YM_RIGHT            = 1;
 
-Boolean YM_initalized;
+uint8_t YM_initalized;
 
 // Sample Frequency in use
 uint32_t YM_sample_freq;
@@ -34,7 +33,7 @@ uint8_t YM_channels;
 // Size of the buffer (including channel info)
 uint32_t YM_buffer_size;
 
-Boolean YM_irq;
+uint8_t YM_irq;
 
 //  Buffer size for one frame (excluding channel info)
 uint32_t YM_frame_size;
@@ -465,7 +464,7 @@ static FILE *sample[9];
 void YM_Create(float volume, uint32_t clock)
 {
     YM_volume     = 1.0;
-    YM_initalized = FALSE;
+    YM_initalized = 0;
 
     YM_volume = volume;  
     YM_clock = clock;
@@ -1097,7 +1096,7 @@ void YM_write_reg(int r, int v)
                 #ifdef USE_MAME_TIMERS
                 /* ASG 980324: added a real timer */
                 /* start timer _only_ if it wasn't already started (it will reload time value next round) */
-                    if (!timer_B->enable(TRUE))
+                    if (!timer_B->enable(1))
                     {
                         timer_B->adjust(timer_B_time[ timer_B_index ]);
                         timer_B_index_old = timer_B_index;
@@ -1114,7 +1113,7 @@ void YM_write_reg(int r, int v)
             {        /* stop timer B */
                 #ifdef USE_MAME_TIMERS
                 /* ASG 980324: added a real timer */
-                    timer_B->enable(FALSE);
+                    timer_B->enable(0);
                 #else
                     tim_B = 0;
                 #endif
@@ -1125,7 +1124,7 @@ void YM_write_reg(int r, int v)
                 #ifdef USE_MAME_TIMERS
                 /* ASG 980324: added a real timer */
                 /* start timer _only_ if it wasn't already started (it will reload time value next round) */
-                    if (!timer_A->enable(TRUE))
+                    if (!timer_A->enable(1))
                     {
                         timer_A->adjust(timer_A_time[ timer_A_index ]);
                         timer_A_index_old = timer_A_index;
@@ -1142,7 +1141,7 @@ void YM_write_reg(int r, int v)
             {        /* stop timer A */
                 #ifdef USE_MAME_TIMERS
                 /* ASG 980324: added a real timer */
-                    timer_A->enable(FALSE);
+                    timer_A->enable(0);
                 #else
                     tim_A = 0;
                 #endif
@@ -1360,9 +1359,7 @@ void YM_init(int rate, int fps)
     
     YM_buffer = (int16_t*)malloc(YM_buffer_size * sizeof(int16_t));
 
-    YM_initalized = TRUE;
-
-
+    YM_initalized = 1;
 
     YM_sampfreq = rate;
     YM_init_tables();
@@ -1434,8 +1431,8 @@ void YM_ym2151_reset_chip()
     irq_enable = 0;
 #ifdef USE_MAME_TIMERS
     /* ASG 980324 -- reset the timers before writing to the registers */
-    timer_A->enable(FALSE);
-    timer_B->enable(FALSE);
+    timer_A->enable(0);
+    timer_B->enable(0);
 #else
     tim_A      = 0;
     tim_B      = 0;
@@ -2101,7 +2098,7 @@ void YM_stream_update()
                 int oldstate = status & 3;
                 status |= 2;
                 //if ((!oldstate) && (irqhandler)) (*irqhandler)(device, 1);
-                if (oldstate==0) YM_irq = TRUE;
+                if (oldstate==0) YM_irq = 1;
             }
         }
     }
@@ -2171,7 +2168,7 @@ void YM_stream_update()
                     int oldstate = status & 3;
                     status |= 1;
                     //if ((!oldstate) && (irqhandler)) (*irqhandler)(device, 1);
-                    if (oldstate==0) YM_irq = TRUE;
+                    if (oldstate==0) YM_irq = 1;
                 }
                 if (irq_enable & 0x80)
                     csm_req = 2;    /* request KEY ON / KEY OFF sequence */

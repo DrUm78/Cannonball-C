@@ -15,7 +15,7 @@ X Finish Ferrari sound code
 X More cars seem to be high pitched than on MAME. (Fixed - engine channel setup)
 
 */
-
+#include <stdint.h>
 #include <string.h>
 #include "engine/audio/osound.h"
 #include <stdio.h>
@@ -183,7 +183,7 @@ void OSound_engine_process_chan(uint8_t* chan, uint8_t* pcm);
 void OSound_vol_thicken(uint16_t* pos, uint8_t* chan, uint8_t* pcm);
 uint8_t OSound_get_adjusted_vol(uint16_t* pos, uint8_t* chan);
 void OSound_engine_set_pitch(uint16_t* pos, uint8_t* pcm);
-void OSound_engine_mute_channel(uint8_t* chan, uint8_t* pcm, Boolean do_check);
+void OSound_engine_mute_channel(uint8_t* chan, uint8_t* pcm, uint8_t do_check);
 void OSound_unk78c7(uint8_t* chan, uint8_t* pcm);
 void OSound_ferrari_vol_pan(uint8_t* chan, uint8_t* pcm);
 uint16_t OSound_engine_get_table_adr(uint8_t* chan, uint8_t* pcm);
@@ -470,7 +470,7 @@ void OSound_process_command()
 // Source: 0x833
 void OSound_new_command()
 {
-    uint8_t i;
+    uint16_t i;
     // ------------------------------------------------------------------------
     // FM Sound Effects Only (Increase Volume)
     // ------------------------------------------------------------------------
@@ -1403,7 +1403,7 @@ void OSound_read_mod_table(uint8_t* chan)
 {
     uint16_t adr = OSound_ym_lookup_data(chan[ch_COMMAND], 2, chan[ch_FM_PHASETBL]); // Use Routine 2.
 
-    while (TRUE)
+    while (1)
     {
         uint16_t offset = chan[ch_FM_PHASEOFF];
         uint8_t table_entry = RomLoader_read8_addr16(&Roms_z80, (uint16_t) (adr + offset));
@@ -1520,7 +1520,7 @@ void OSound_engine_process_chan(uint8_t* chan, uint8_t* pcm)
         // No revs, mute engine channel and get out of here
         if (revs == 0)
         {
-            OSound_engine_mute_channel(chan, pcm, TRUE);
+            OSound_engine_mute_channel(chan, pcm, 1);
             return;
         }
         // 0x766E
@@ -1570,7 +1570,7 @@ void OSound_engine_process_chan(uint8_t* chan, uint8_t* pcm)
     // Check engine volume and mute channel if disabled
     if (!chan[ch_engines_VOL0])
     {
-        OSound_engine_mute_channel(chan, pcm, TRUE);
+        OSound_engine_mute_channel(chan, pcm, 1);
         return;
     }
 
@@ -1591,7 +1591,7 @@ void OSound_engine_process_chan(uint8_t* chan, uint8_t* pcm)
     uint16_t revs = OSound_r16(pcm);
     if (revs == 0)
     {
-        OSound_engine_mute_channel(chan, pcm, TRUE);
+        OSound_engine_mute_channel(chan, pcm, 1);
         return;
     }
 
@@ -1655,7 +1655,7 @@ void OSound_engine_process_chan(uint8_t* chan, uint8_t* pcm)
     // Mute Engine Channel
     if (chan[ch_engines_FLAGS] & BIT_5)
     {
-        OSound_engine_mute_channel(chan, pcm, FALSE);
+        OSound_engine_mute_channel(chan, pcm, 0);
         return;
     }
 
@@ -1727,7 +1727,7 @@ void OSound_ferrari_vol_pan(uint8_t* chan, uint8_t* pcm)
 
     if (pitch_table_index < 0)
     {
-        OSound_engine_mute_channel(chan, pcm, FALSE);
+        OSound_engine_mute_channel(chan, pcm, 0);
         return;
     }
 
@@ -1906,7 +1906,7 @@ void OSound_engine_set_pitch(uint16_t* pos, uint8_t* pcm)
 
 // Mute an engine channel
 // Source: 0x7639
-void OSound_engine_mute_channel(uint8_t* chan, uint8_t* pcm, Boolean do_check)
+void OSound_engine_mute_channel(uint8_t* chan, uint8_t* pcm, uint8_t do_check)
 {
     // Return if already muted
     if (do_check && (chan[ch_engines_ACTIVE] & BIT_0))

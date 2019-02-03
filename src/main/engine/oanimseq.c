@@ -12,7 +12,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/obonus.h"
 #include "engine/oferrari.h"
 #include "engine/oinputs.h"
@@ -68,14 +68,14 @@ int16_t seq_pos;
 uint8_t end_seq_state;
 
 // Used for Ferrari End Animation Sequence
-Boolean ferrari_stopped;
+uint8_t ferrari_stopped;
 
 void OAnimSeq_init_end_sprites();
 void OAnimSeq_tick_ferrari();
 void OAnimSeq_anim_seq_outro(oanimsprite*);
 void OAnimSeq_anim_seq_shadow(oanimsprite*, oanimsprite*);
 void OAnimSeq_anim_seq_outro_ferrari();
-Boolean OAnimSeq_read_anim_data(oanimsprite*);
+uint8_t OAnimSeq_read_anim_data(oanimsprite*);
 
 
 void OAnimSeq_init_oanimsprite(oanimsprite* animsprite, oentry* s)
@@ -134,7 +134,7 @@ void OAnimSeq_init(oentry* jump_table)
     // --------------------------------------------------------------------------------------------
     end_seq_state = 0; // init
     seq_pos = 0;
-    ferrari_stopped = FALSE;
+    ferrari_stopped = 0;
 
     OAnimSeq_init_oanimsprite(&OAnimSeq_anim_obj1, &jump_table[SPRITE_CRASH]);
     OAnimSeq_init_oanimsprite(&OAnimSeq_anim_obj2, &jump_table[SPRITE_CRASH_SPRITES_SHADOW]);
@@ -416,7 +416,7 @@ void OAnimSeq_init_end_sprites()
     uint32_t addr = Outrun_adr.anim_endseq_obj1 + (OAnimSeq_end_seq << 3);
     OAnimSeq_anim_ferrari.anim_addr_curr = RomLoader_read32IncP(Roms_rom0p, &addr);
     OAnimSeq_anim_ferrari.anim_addr_next = RomLoader_read32IncP(Roms_rom0p, &addr);
-    ferrari_stopped = FALSE;
+    ferrari_stopped = 0;
     
     // 0x58A4: Car Door Opening Animation [seq_sprite_entry]
     OAnimSeq_anim_obj1.sprite->control |= SPRITES_ENABLE;
@@ -548,13 +548,13 @@ void OAnimSeq_anim_seq_outro_ferrari()
         // Car is moving. Turn Brake On.
         if (OInitEngine_car_increment >> 16)
         {
-            OFerrari_auto_brake  = TRUE;
+            OFerrari_auto_brake  = 1;
             OInputs_brake_adjust = 0xFF;
         }
         else
         {
             OSoundInt_queue_sound(sound_VOICE_CONGRATS);
-            ferrari_stopped = TRUE;
+            ferrari_stopped = 1;
         }
     }
     OAnimSeq_anim_seq_outro(&OAnimSeq_anim_ferrari);
@@ -660,7 +660,7 @@ void OAnimSeq_anim_seq_shadow(oanimsprite* parent, oanimsprite* anim)
 
 // Read Animation Data for End Sequence
 // Source: 0x5CC4
-Boolean OAnimSeq_read_anim_data(oanimsprite* anim)
+uint8_t OAnimSeq_read_anim_data(oanimsprite* anim)
 {
     uint32_t addr = Outrun_adr.anim_end_table + (OAnimSeq_end_seq << 2) + (anim->sprite->id << 2) +  (anim->sprite->id << 4); // a0 + d1
 
@@ -696,8 +696,8 @@ Boolean OAnimSeq_read_anim_data(oanimsprite* anim)
     // Process Animation Sequence
     // --------------------------------------------------------------------------------------------
 
-    const Boolean DO_NOTHING = FALSE;
-    const Boolean PROCESS    = TRUE;
+    const uint8_t DO_NOTHING = 0;
+    const uint8_t PROCESS    = 1;
 
     // check_seq_pos:
     // Sequence: Start Position

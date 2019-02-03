@@ -53,11 +53,10 @@
  *      |          |        l = loop   (0 = enabled, 1 = disabled)
  * 
  */
-
+#include <stdint.h>
 #include "hwaudio/segapcm.h"
 
-
-Boolean SegaPCM_initalized;
+uint8_t SegaPCM_initalized;
 
 // Sample Frequency in use
 uint32_t SegaPCM_sample_freq;
@@ -83,13 +82,10 @@ void SegaPCM_clear_buffer();
 void SegaPCM_write_buffer(const uint8_t, uint32_t, int16_t);
 int16_t SegaPCM_read_buffer(const uint8_t, uint32_t);
 
-
-#define AUDIO_FREQUENCY 44100
-
-#define PCM_BUFFER_SIZE (AUDIO_FREQUENCY / 30 /*max fps*/) * 2 /*two channels*/
+uint32_t PCM_BUFFER_SIZE;
 
 // Sound buffer stream
-int16_t SegaPCM_buffer[PCM_BUFFER_SIZE]; // maximum possible buffer size.  
+int16_t SegaPCM_buffer[(REAL_AUDIO_FREQUENCY / 30) * 2]; // maximum possible buffer size.  
 
 // Frames per second
 uint32_t SegaPCM_fps; 
@@ -105,13 +101,11 @@ int32_t SegaPCM_rgnmask;
 
 double SegaPCM_downsample;
 
-
-
 void SegaPCM_Create(uint32_t clock, RomLoader* rom, uint8_t* ram, int32_t bank)
 {
     int32_t i;
     SegaPCM_volume     = 1.0;
-    SegaPCM_initalized = FALSE;
+    SegaPCM_initalized = 0;
 
     SegaPCM_ram = ram;
     SegaPCM_pcm_rom = rom->rom;  
@@ -139,6 +133,9 @@ void SegaPCM_Destroy()
 
 void SegaPCM_init(int32_t fps)
 {
+	/* 30 = max fps, 2 = number of channels (Stereo) */
+	PCM_BUFFER_SIZE = (AUDIO_FREQUENCY / 30) * 2;
+	
     SegaPCM_downsample = (32000.0 / (double) AUDIO_FREQUENCY);
 
     SegaPCM_fps = fps;
@@ -148,7 +145,7 @@ void SegaPCM_init(int32_t fps)
     SegaPCM_frame_size =  SegaPCM_sample_freq / SegaPCM_fps;
     SegaPCM_buffer_size = SegaPCM_frame_size * SegaPCM_channels;
 
-    SegaPCM_initalized = TRUE;
+    SegaPCM_initalized = 1;
 }
 
 void SegaPCM_stream_update()

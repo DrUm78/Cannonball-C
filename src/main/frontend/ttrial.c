@@ -58,12 +58,12 @@ int TTrial_tick()
             Outrun_select_course(Config_engine.jap != 0, Config_engine.prototype != 0); // Need to setup correct course map graphics.
             Config_load_tiletrial_scores();
             OSprites_init();
-            Video_enabled = TRUE;
-            HWSprites_set_x_clip(FALSE);
+            Video_enabled = 1;
+            HWSprites_set_x_clip(0);
             OMap_init();
             OMap_load_sprites();              
             OMap_position_ferrari(FERRARI_POS[TTrial_level_selected = 0]);
-            OHud_blit_text_big(1, "STEER TO SELECT TRACK", FALSE);
+            OHud_blit_text_big(1, "STEER TO SELECT TRACK", 0);
             OHud_blit_text1XY(2, 25, TEXT1_LAPTIME1);
             OHud_blit_text1XY(2, 26, TEXT1_LAPTIME2);
             OSoundInt_queue_sound(sound_PCM_WAVE);
@@ -99,7 +99,7 @@ int TTrial_tick()
                     Outrun_ttrial.best_lap[1]      = best_converted[1];
                     Outrun_ttrial.best_lap[2]      = best_converted[2];
                     Outrun_ttrial.best_lap_counter = TTrial_best_times[TTrial_level_selected];
-                    Outrun_ttrial.new_high_score   = FALSE;
+                    Outrun_ttrial.new_high_score   = 0;
                     Outrun_ttrial.overtakes        = 0;
                     Outrun_ttrial.crashes          = 0;
                     Outrun_ttrial.vehicle_cols     = 0;

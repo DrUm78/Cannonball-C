@@ -9,17 +9,18 @@
 ***************************************************************************/
 
 #include <stdlib.h>
+#include <stdint.h>
 #include "sdl/input.h"
 
 #include "engine/ohud.h"
 #include "frontend/config.h"
  
 
-Boolean Input_keys[15];
-Boolean Input_keys_old[15];
+uint8_t Input_keys[15];
+uint8_t Input_keys_old[15];
 
 // Has gamepad been found?
-Boolean Input_gamepad;
+uint8_t Input_gamepad;
 
 // Use analog controls
 int Input_analog;
@@ -41,7 +42,7 @@ static const int CENTRE = 0x80;
 static const int DIGITAL_DEAD = 127;
 
 // SDL Joystick / Keypad
-//SDL_Joystick *Input_stick;
+SDL_Joystick *Input_stick;
 
 // Configurations for keyboard and joypad
 int* Input_pad_config;
@@ -52,8 +53,8 @@ int Input_wheel_zone;
 int Input_wheel_dead;
 int Input_pedals_dead;
 
-void Input_handle_key(const int, const Boolean);
-void Input_handle_joy(const uint8_t, const Boolean);
+void Input_handle_key(const int, const uint8_t);
+void Input_handle_joy(const uint8_t, const uint8_t);
 
 void Input_init(int pad_id, int* key_config, int* pad_config, int analog, int* axis, int* analog_settings)
 {
@@ -65,39 +66,39 @@ void Input_init(int pad_id, int* key_config, int* pad_config, int analog, int* a
     Input_wheel_dead  = analog_settings[1];
     Input_pedals_dead = analog_settings[2];
 
-    //Input_gamepad = SDL_NumJoysticks() > pad_id;
+    Input_gamepad = SDL_NumJoysticks() > pad_id;
 
-    //if (Input_gamepad)
-    //{
-    //   Input_stick = SDL_JoystickOpen(pad_id);
-    //}
+    if (Input_gamepad)
+    {
+       Input_stick = SDL_JoystickOpen(pad_id);
+    }
 
     Input_a_wheel = CENTRE;
 }
 
 void Input_close()
 {
-    //if (Input_gamepad && Input_stick != NULL)
-    //    SDL_JoystickClose(Input_stick);
+    if (Input_gamepad && Input_stick != NULL)
+		SDL_JoystickClose(Input_stick);
 }
 
 // Detect whether a key press change has occurred
-Boolean Input_has_pressed(enum presses p)
+uint8_t Input_has_pressed(enum presses p)
 {
     return Input_keys[p] && !Input_keys_old[p];
 }
 
 // Detect whether key is still pressed
-Boolean Input_is_pressed(enum presses p)
+uint8_t Input_is_pressed(enum presses p)
 {
     return Input_keys[p];
 }
 
 // Detect whether pressed and clear the press
-Boolean Input_is_pressed_clear(enum presses p)
+uint8_t Input_is_pressed_clear(enum presses p)
 {
-    Boolean pressed = Input_keys[p];
-    Input_keys[p] = FALSE;
+    uint8_t pressed = Input_keys[p];
+    Input_keys[p] = 0;
     return pressed;
 }
 
@@ -110,14 +111,14 @@ void Input_frame_done()
 void Input_handle_key_down(SDL_keysym* keysym)
 {
     Input_key_press = keysym->sym;
-    Input_handle_key(Input_key_press, TRUE);
+    Input_handle_key(Input_key_press, 1);
 }
 
 void Input_handle_key_up(SDL_keysym* keysym)
 {
-    Input_handle_key(keysym->sym, FALSE);
+    Input_handle_key(keysym->sym, 0);
 }
-void Input_handle_key(const int key, const Boolean is_pressed)
+void Input_handle_key(const int key, const uint8_t is_pressed)
 {
     // Redefinable Key Input
     if (key == Input_key_config[0])
@@ -174,15 +175,7 @@ void Input_handle_key(const int key, const Boolean is_pressed)
         case SDLK_F5:
             Input_keys[INPUT_MENU] = is_pressed;
             break;
-            
-        case SDLK_F9:
-            Config_video.detailLevel++;
-            if (Config_video.detailLevel > 2)
-                Config_video.detailLevel = 0;
-            
-            
-            
-            break;
+
     }
 }
 
@@ -199,16 +192,16 @@ void Input_handle_joy_axis(SDL_JoyAxisEvent* evt)
             // Neural
             if ( (value > -DIGITAL_DEAD ) && (value < DIGITAL_DEAD ) )
             {
-                Input_keys[INPUT_LEFT]  = FALSE;
-                Input_keys[INPUT_RIGHT] = FALSE;
+                Input_keys[INPUT_LEFT]  = 0;
+                Input_keys[INPUT_RIGHT] = 0;
             }
             else if (value < 0)
             {
-                Input_keys[INPUT_LEFT] = TRUE;
+                Input_keys[INPUT_LEFT] = 1;
             }
             else if (value > 0)
             {
-                Input_keys[INPUT_RIGHT] = TRUE;
+                Input_keys[INPUT_RIGHT] = 1;
             }
         }
         // Y-Axis
@@ -217,16 +210,16 @@ void Input_handle_joy_axis(SDL_JoyAxisEvent* evt)
             // Neural
             if ( (value > -DIGITAL_DEAD ) && (value < DIGITAL_DEAD ) )
             {
-                Input_keys[INPUT_UP]  = FALSE;
-                Input_keys[INPUT_DOWN] = FALSE;
+                Input_keys[INPUT_UP]  = 0;
+                Input_keys[INPUT_DOWN] = 0;
             }
             else if (value < 0)
             {
-                Input_keys[INPUT_UP] = TRUE;
+                Input_keys[INPUT_UP] = 1;
             }
             else if (value > 0)
             {
-                Input_keys[INPUT_DOWN] = TRUE;
+                Input_keys[INPUT_DOWN] = 1;
             }
         }
     }
@@ -310,15 +303,15 @@ void Input_handle_joy_down(SDL_JoyButtonEvent* evt)
 {
     // Latch joystick button presses for redefines
     Input_joy_button = evt->button;
-    Input_handle_joy(evt->button, TRUE);
+    Input_handle_joy(evt->button, 1);
 }
 
 void Input_handle_joy_up(SDL_JoyButtonEvent* evt)
 {
-    Input_handle_joy(evt->button, FALSE);
+    Input_handle_joy(evt->button, 0);
 }
 
-void Input_handle_joy(const uint8_t button, const Boolean is_pressed)
+void Input_handle_joy(const uint8_t button, const uint8_t is_pressed)
 {
     if (button == Input_pad_config[0])
         Input_keys[INPUT_ACCEL] = is_pressed;

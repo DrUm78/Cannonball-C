@@ -12,7 +12,7 @@
 #pragma once
 
 
-#include "stdint.h"
+#include <stdint.h>
 #include "globals.h"
 #include "roms.h"
 #include "frontend/config.h"
@@ -22,7 +22,7 @@
 
 extern uint16_t *Video_pixels;
 
-extern Boolean Video_enabled;
+extern uint8_t Video_enabled;
 
 void Video_Create();
 void Video_Destroy();

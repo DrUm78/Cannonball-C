@@ -18,6 +18,7 @@
 #include "engine/ostats.h"
 
 #include <string.h>
+#include <stdint.h>
 #include "utils.h"
 
 // Draw Text Labels For HUD
@@ -44,7 +45,7 @@ void OHud_draw_main_hud()
         OHud_draw_score(OHud_translate(3, 2, 0x110030), 0, 2);
         OHud_blit_text1XY(2, 1, HUD_SCORE1);
         OHud_blit_text1XY(2, 2, HUD_SCORE2);
-        OHud_blit_text_big(4, "TIME TO BEAT", FALSE);
+        OHud_blit_text_big(4, "TIME TO BEAT", 0);
         OHud_draw_lap_timer(OHud_translate(16, 7, 0x110030), Outrun_ttrial.best_lap, Outrun_ttrial.best_lap[2]);
     }
     else if (Outrun_cannonball_mode == OUTRUN_MODE_CONT)
@@ -61,7 +62,7 @@ void OHud_draw_main_hud()
 
 void OHud_clear_timetrial_text()
 {
-    OHud_blit_text_big(4,     "            ", FALSE);
+    OHud_blit_text_big(4,     "            ", 0);
     OHud_blit_text_new(16, 7, "            ", HUD_GREY);
 }
 
@@ -249,7 +250,7 @@ void OHud_draw_score(uint32_t addr, const uint32_t score, const uint8_t font)
     digits[6] = (score & 0xF0) >> 4;
     digits[7] = (score & 0xF);
 
-    Boolean found = FALSE;
+    uint8_t found = 0;
 
     // Draw blank digits until we find first digit
     // Then use zero for blank digits
@@ -260,7 +261,7 @@ void OHud_draw_score(uint32_t addr, const uint32_t score, const uint8_t font)
         else
         {
             Video_write_text16IncP(&addr, digits[i] + BASE);
-            found = TRUE;
+            found = 1;
         }
     }
 
@@ -290,7 +291,7 @@ void OHud_draw_score_tile(uint32_t addr, const uint32_t score, const uint8_t fon
     digits[6] = (score & 0xF0) >> 4;
     digits[7] = (score & 0xF);
 
-    Boolean found = FALSE;
+    uint8_t found = 0;
 
     // Draw blank digits until we find first digit
     // Then use zero for blank digits
@@ -301,7 +302,7 @@ void OHud_draw_score_tile(uint32_t addr, const uint32_t score, const uint8_t fon
         else
         {
             Video_write_tile16IncP(&addr, digits[i] + BASE);
-            found = TRUE;
+            found = 1;
         }
     }
 
@@ -643,7 +644,7 @@ void OHud_draw_debug_info(uint32_t pos, uint16_t height_pat, uint8_t sprite_pat)
 }
 
 // Big Yellow Text. Always Centered. 
-void OHud_blit_text_big(const uint8_t Y, const char* text, Boolean do_notes)
+void OHud_blit_text_big(const uint8_t Y, const char* text, uint8_t do_notes)
 {
     uint8_t x;
     uint16_t i;

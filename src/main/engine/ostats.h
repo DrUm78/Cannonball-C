@@ -10,7 +10,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 // Current stage
@@ -100,7 +100,7 @@ static const uint8_t STATS_TIME[] =
 extern int16_t OStats_stage_counters[15];
 
 // Set when game completed
-extern Boolean OStats_game_completed;
+extern uint8_t OStats_game_completed;
 
 extern const uint8_t* OStats_lap_ms;
 
@@ -111,7 +111,7 @@ extern uint8_t OStats_credits;
 extern uint8_t OStats_stage_times[15][3];
 
 
-void OStats_init(Boolean);
+void OStats_init(uint8_t);
 
 void OStats_clear_stage_times();
 void OStats_clear_route_info();

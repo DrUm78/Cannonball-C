@@ -16,7 +16,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/oanimseq.h"
 #include "engine/oattractai.h"
 #include "engine/obonus.h"
@@ -37,9 +37,9 @@ oentry *OFerrari_spr_shadow;
 uint8_t OFerrari_state; 
 uint16_t OFerrari_counter;
 int16_t OFerrari_steering_old;
-Boolean OFerrari_car_ctrl_active;
+uint8_t OFerrari_car_ctrl_active;
 int8_t OFerrari_car_state;
-Boolean OFerrari_auto_brake;
+uint8_t OFerrari_auto_brake;
 uint8_t OFerrari_torque_index; 
 int16_t OFerrari_torque;
 int32_t OFerrari_revs;
@@ -88,8 +88,8 @@ int16_t road_width_old;
 int16_t accel_value;
 int16_t accel_value_bak;
 int16_t brake_value;
-Boolean gear_value;
-Boolean gear_bak;
+uint8_t gear_value;
+uint8_t gear_bak;
 
 // Trickle down adjusted acceleration values
 int16_t acc_adjust1;
@@ -227,7 +227,7 @@ void OFerrari_init(oentry *f, oentry *p1, oentry *p2, oentry *s)
     OFerrari_steering_old      = 0;
     road_width_old             = 0;
     OFerrari_car_state         = CAR_NORMAL;
-    OFerrari_auto_brake        = FALSE;
+    OFerrari_auto_brake        = 0;
     OFerrari_torque_index      = 0;
     OFerrari_torque            = 0;
     OFerrari_revs              = 0;
@@ -259,8 +259,8 @@ void OFerrari_init(oentry *f, oentry *p1, oentry *p2, oentry *s)
     accel_value       = 0;
     accel_value_bak   = 0;
     brake_value       = 0;
-    gear_value        = FALSE;
-    gear_bak          = FALSE;
+    gear_value        = 0;
+    gear_bak          = 0;
     brake_subtract    = 0;
     gear_counter      = 0;
     rev_adjust        = 0;
@@ -268,7 +268,7 @@ void OFerrari_init(oentry *f, oentry *p1, oentry *p2, oentry *s)
     gfx_smoke         = 0;
     cornering         = 0;
     cornering_old     = 0;
-    OFerrari_car_ctrl_active   = TRUE;
+    OFerrari_car_ctrl_active   = 1;
 }
 
 // Reset all values relating to car speed, revs etc.
@@ -286,7 +286,7 @@ void OFerrari_reset_car()
     OFerrari_torque               = 0x1000;
     OFerrari_torque_index         = 0x1F;
     OFerrari_rev_stop_flag        = 0;
-    OInitEngine_ingame_engine = FALSE;
+    OInitEngine_ingame_engine = 0;
     OInitEngine_ingame_counter = 0x1E; // Set ingame counter (time until we hand control to user)
     OFerrari_slip_sound           = sound_STOP_SLIP;
     acc_adjust1          = 
@@ -295,7 +295,7 @@ void OFerrari_reset_car()
     brake_adjust1        = 
     brake_adjust2        = 
     brake_adjust3        = 0;
-    OFerrari_auto_brake           = FALSE;
+    OFerrari_auto_brake           = 0;
     OFerrari_counter              = 0;
     OFerrari_is_slipping          = 0;    // Denote not slipping/skidding
 }
@@ -450,7 +450,7 @@ void OFerrari_logic()
                 }
                 else
                 {
-                    OFerrari_car_ctrl_active = FALSE; // -1
+                    OFerrari_car_ctrl_active = 0; // -1
                     OInitEngine_car_increment = 0;
                     OBonus_bonus_control = BONUS_END;
                 }
@@ -1340,7 +1340,7 @@ void OFerrari_tick_engine_disabled(int32_t *d2)
         return;
 
     // Switch back to in-game engine mode
-    OInitEngine_ingame_engine = TRUE;
+    OInitEngine_ingame_engine = 1;
 
     OFerrari_torque = 0x1000;
 
@@ -1454,7 +1454,7 @@ void OFerrari_do_gear_low(int16_t *d1)
     // Recent Shift from high to low
     if (gear_bak)
     {
-        gear_value = FALSE;
+        gear_value = 0;
         gear_counter = 4;
         return;
     }
@@ -1480,7 +1480,7 @@ void OFerrari_do_gear_high(int16_t *d1)
     // Change from Low Gear to High Gear
     if (!gear_bak)
     {
-        gear_value = TRUE;
+        gear_value = 1;
         gear_counter = 4;
         return;
     }

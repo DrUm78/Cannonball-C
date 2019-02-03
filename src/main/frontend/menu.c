@@ -7,7 +7,7 @@
 ***************************************************************************/
 
 #include "main.h"
-
+#include <stdint.h>
 #include "menu.h"
 #include "setup.h"
 
@@ -37,7 +37,7 @@ int32_t message_counter;
 const static int32_t MESSAGE_TIME = 5;
 const char* msg;
 int16_t cursor;
-Boolean is_text_menu;
+uint8_t is_text_menu;
 uint16_t horizon_pos;
 
 // ------------------------------------------------------------------------------------------------
@@ -168,13 +168,7 @@ uint16_t menu_engine_itemcount = 7;
 uint16_t menu_musictest_itemcount = 5;
 uint16_t text_redefine_itemcount = 12;
 
-#ifdef COMPILE_SOUND_CODE
-uint16_t menu_settings_itemcount = 6;
-#else
 uint16_t menu_settings_itemcount = 5;
-#endif
-
-
 
 void Menu_tick_ui();
 void Menu_draw_menu_options();
@@ -186,11 +180,9 @@ void Menu_set_menu_text(const char* s1, const char* s2);
 void Menu_redefine_keyboard();
 void Menu_redefine_joystick();
 void Menu_display_message(const char* message);
-Boolean Menu_check_jap_roms();
+uint8_t Menu_check_jap_roms();
 void Menu_restart_video();
 void Menu_start_game(int mode, int settings);
-
-
 
 // Logo Y Position
 const static int16_t LOGO_Y = -60;
@@ -203,19 +195,18 @@ const static uint16_t ROWS = 28;
 const static uint16_t HORIZON_DEST = 0x3A0;
 
 
-
 void Menu_init()
 {   
     // If we got a new high score on previous time trial, then save it!
     if (Outrun_ttrial.new_high_score)
     {
-        Outrun_ttrial.new_high_score = FALSE;
+        Outrun_ttrial.new_high_score = 0;
         TTrial_update_best_time();
     }
 
-    Outrun_select_course(FALSE, Config_engine.prototype != 0);
-    Video_enabled = TRUE;
-    HWSprites_set_x_clip(FALSE); // Stop clipping in wide-screen mode.
+    Outrun_select_course(0, Config_engine.prototype != 0);
+    Video_enabled = 1;
+    HWSprites_set_x_clip(0); // Stop clipping in wide-screen mode.
     HWSprites_reset();
     Video_clear_text_ram();
     HWTiles_restore_tiles();
@@ -246,7 +237,7 @@ void Menu_init()
     Menu_refresh_menu();
 
     // Reset audio, so we can play tones
-    OSoundInt_has_booted = TRUE;
+    OSoundInt_has_booted = 1;
     OSoundInt_init();
 
 #ifdef COMPILE_SOUND_CODE
@@ -399,7 +390,7 @@ void Menu_draw_text(const char* s)
     OHud_blit_text_new(x, y, s, HUD_GREEN);
 }
 
-Boolean startsWith(const char* base, const char* str)
+uint8_t startsWith(const char* base, const char* str)
 {
     return (strstr(base, str) - base) == 0;
 }
@@ -560,7 +551,7 @@ void Menu_tick_menu()
                 }
 
                 Menu_restart_video();
-                HWSprites_set_x_clip(FALSE);
+                HWSprites_set_x_clip(0);
             }
             else if (SELECTED(ENTRY_SCALE))
             {
@@ -781,7 +772,7 @@ void Menu_set_menu(String* menu, uint16_t menu_items_count)
     int loop;
     for (loop = 0; loop < menu_items_count; loop++)
     {
-        strcpy(menu_selected_todraw[loop], menu[loop]);
+		snprintf(menu_selected_todraw[loop], MAX_STRING, "%s", menu[loop]);
     }
 
     is_text_menu = (menu == menu_about);
@@ -1009,14 +1000,14 @@ void Menu_display_message(const char* message)
     message_counter = MESSAGE_TIME * Config_fps;
 }
 
-Boolean Menu_check_jap_roms()
+uint8_t Menu_check_jap_roms()
 {
     if (Config_engine.jap && !Roms_load_japanese_roms())
     {
         Menu_display_message("JAPANESE ROMSET NOT FOUND");
-        return FALSE;
+        return 0;
     }
-    return TRUE;
+    return 1;
 }
 
 // Reinitalize Video, and stop audio to avoid crackles
@@ -1048,7 +1039,7 @@ void Menu_start_game(int mode, int settings)
 
         if (!Config_sound.fix_samples)
         {
-            if (Roms_load_pcm_rom(TRUE))
+            if (Roms_load_pcm_rom(1))
                 Config_sound.fix_samples = 1;
         }
 
@@ -1072,7 +1063,7 @@ void Menu_start_game(int mode, int settings)
 
         if (Config_sound.fix_samples)
         {
-            if (Roms_load_pcm_rom(FALSE))
+            if (Roms_load_pcm_rom(0))
                 Config_sound.fix_samples = 0;
         }
 

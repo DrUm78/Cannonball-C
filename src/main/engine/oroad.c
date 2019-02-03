@@ -18,7 +18,7 @@
     See license.txt for more details.
 ***************************************************************************/
 
-#include "stdint.h"
+#include <stdint.h>
 #include "globals.h"
 #include "roms.h"
 #include "trackloader.h"
@@ -183,7 +183,7 @@ void ORoad_add_next_road_pos(uint32_t*);
 void ORoad_create_curve(int16_t*, int16_t*, int32_t, int32_t, int16_t, int16_t);
 
 void ORoad_setup_hscroll();
-void ORoad_do_road_offset(int16_t*, int16_t, Boolean);
+void ORoad_do_road_offset(int16_t*, int16_t, uint8_t);
 
 void ORoad_setup_road_y();
 void ORoad_init_height_seg();
@@ -252,7 +252,7 @@ void ORoad_init()
 {
     int i;
     // Extra initalization code here
-    ORoad_set_view_mode(ROAD_VIEW_ORIGINAL, TRUE);
+    ORoad_set_view_mode(ROAD_VIEW_ORIGINAL, 1);
     ORoad_road_pos         = 0;
     ORoad_tilemap_h_target = 0;
     ORoad_stage_lookup_off = 0;
@@ -338,7 +338,7 @@ uint8_t ORoad_get_view_mode()
     return view_mode;
 }
 
-void ORoad_set_view_mode(uint8_t mode, Boolean snap)
+void ORoad_set_view_mode(uint8_t mode, uint8_t snap)
 {
     view_mode = mode;
 
@@ -669,27 +669,27 @@ void ORoad_setup_hscroll()
 
         case ROAD_R0:
         case ROAD_R0_SPLIT:
-            ORoad_do_road_offset(ORoad_road0_h, -ORoad_road_width_bak, FALSE);
+            ORoad_do_road_offset(ORoad_road0_h, -ORoad_road_width_bak, 0);
             break;
 
         case ROAD_R1:
-            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, FALSE);
+            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, 0);
             break;
 
         case ROAD_BOTH_P0:
         case ROAD_BOTH_P1:
-            ORoad_do_road_offset(ORoad_road0_h, -ORoad_road_width_bak, FALSE);
-            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, FALSE);
+            ORoad_do_road_offset(ORoad_road0_h, -ORoad_road_width_bak, 0);
+            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, 0);
             break;
 
         case ROAD_BOTH_P0_INV:
         case ROAD_BOTH_P1_INV:
-            ORoad_do_road_offset(ORoad_road0_h, -ORoad_road_width_bak, FALSE);
-            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, TRUE);
+            ORoad_do_road_offset(ORoad_road0_h, -ORoad_road_width_bak, 0);
+            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, 1);
             break;
 
         case ROAD_R1_SPLIT:
-            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, TRUE);
+            ORoad_do_road_offset(ORoad_road1_h, +ORoad_road_width_bak, 1);
             break;  
     }
 }
@@ -705,7 +705,7 @@ void ORoad_setup_hscroll()
 // It is adjusted a different amount depending on how far into the horizon it is. 
 // So lines closer to the player's car are adjusted more.
 
-void ORoad_do_road_offset(int16_t* dst_x, int16_t width, Boolean invert)
+void ORoad_do_road_offset(int16_t* dst_x, int16_t width, uint8_t invert)
 {
     uint16_t i;
     int32_t car_offset = ORoad_car_x_bak + width + OInitEngine_camera_x_off; // note extra debug of camera x
@@ -1442,7 +1442,7 @@ void ORoad_set_horizon_y()
     uint32_t road_y_addr = (0 + ORoad_road_p1); // a1
 
     // read_next
-    while (TRUE)
+    while (1)
     {
         int16_t d0 = ORoad_road_unk[road_int];
         if (d0 == 0) break;

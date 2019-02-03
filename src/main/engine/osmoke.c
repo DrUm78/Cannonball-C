@@ -6,7 +6,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/ocrash.h"
 #include "engine/oferrari.h"
 #include "engine/olevelobjs.h"
@@ -53,7 +53,7 @@ void OSmoke_init()
 // Source: 0xA816
 void OSmoke_draw_ferrari_smoke(oentry *sprite)
 {
-    OSmoke_setup_smoke_sprite(FALSE);
+    OSmoke_setup_smoke_sprite(0);
 
     if (Outrun_game_state != GS_ATTRACT)
     {
@@ -137,14 +137,14 @@ void OSmoke_draw_ferrari_smoke(oentry *sprite)
 // - Use Main entry point when we know for a fact road isn't splitting
 // - Use SetSmokeSprite1 entry point when road could potentially be splitting
 //   Source: 0xA94C
-void OSmoke_setup_smoke_sprite(Boolean force_load)
+void OSmoke_setup_smoke_sprite(uint8_t force_load)
 {
     uint16_t stage_lookup = Outrun_cannonball_mode != OUTRUN_MODE_ORIGINAL ? ORoad_stage_lookup_off : 0;
 
     // Check whether we should load new sprite data when transitioning between stages
     if (!force_load)
     {
-        Boolean set = OSmoke_load_smoke_data & BIT_0;
+        uint8_t set = OSmoke_load_smoke_data & BIT_0;
         OSmoke_load_smoke_data &= ~BIT_0;
         if (!set) return; // Don't load new smoke data
         stage_lookup = ORoad_stage_lookup_off + 8;

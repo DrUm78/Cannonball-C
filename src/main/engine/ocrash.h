@@ -22,7 +22,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 
@@ -100,7 +100,7 @@ extern int16_t OCrash_crash_z;
 
 
 void OCrash_init(oentry* f, oentry* s, oentry* p1, oentry* p1s, oentry* p2, oentry* p2s);
-Boolean OCrash_is_flip();
+uint8_t OCrash_is_flip();
 void OCrash_enable();
 void OCrash_clear_crash_state();
 void OCrash_tick();

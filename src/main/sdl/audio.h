@@ -15,7 +15,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "globals.h"
 
 #ifdef COMPILE_SOUND_CODE
@@ -27,7 +27,7 @@ struct wav_t {
     uint32_t length;
 };
 
-extern Boolean Audio_sound_enabled;
+extern uint8_t Audio_sound_enabled;
 
 void Audio_init();
 void Audio_tick();

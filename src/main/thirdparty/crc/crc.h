@@ -16,10 +16,6 @@
 #ifndef _crc_h
 #define _crc_h
 
-
-#define FALSE	0
-#define TRUE	!FALSE
-
 /*
  * Select the CRC standard from the list that follows.
  */
@@ -34,8 +30,8 @@ typedef unsigned short  crc;
 #define POLYNOMIAL			0x1021
 #define INITIAL_REMAINDER	0xFFFF
 #define FINAL_XOR_VALUE		0x0000
-#define REFLECT_DATA		FALSE
-#define REFLECT_REMAINDER	FALSE
+#define REFLECT_DATA		0
+#define REFLECT_REMAINDER	0
 #define CHECK_VALUE			0x29B1
 
 #elif defined(CRC16)
@@ -46,8 +42,8 @@ typedef unsigned short  crc;
 #define POLYNOMIAL			0x8005
 #define INITIAL_REMAINDER	0x0000
 #define FINAL_XOR_VALUE		0x0000
-#define REFLECT_DATA		TRUE
-#define REFLECT_REMAINDER	TRUE
+#define REFLECT_DATA		1
+#define REFLECT_REMAINDER	1
 #define CHECK_VALUE			0xBB3D
 
 #elif defined(CRC32)
@@ -58,8 +54,8 @@ typedef unsigned long  crc;
 #define POLYNOMIAL			0x04C11DB7
 #define INITIAL_REMAINDER	0xFFFFFFFF
 #define FINAL_XOR_VALUE		0xFFFFFFFF
-#define REFLECT_DATA		TRUE
-#define REFLECT_REMAINDER	TRUE
+#define REFLECT_DATA		1
+#define REFLECT_REMAINDER	1
 #define CHECK_VALUE			0xCBF43926
 
 #else

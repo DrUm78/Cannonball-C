@@ -9,6 +9,7 @@
 ***************************************************************************/
 
 #pragma once
+#include <stdint.h>
 
 enum 
 {
@@ -25,7 +26,7 @@ typedef struct
     uint32_t length;
 
     // Successfully loaded
-    Boolean loaded;
+    uint8_t loaded;
 } RomLoader;
 
 

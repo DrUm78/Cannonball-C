@@ -20,7 +20,7 @@
 
 
 #pragma once
-
+#include <stdint.h>
 
 
 extern uint32_t ORoad_road_pos;        // 0x6: Current Road Position (addressed as long and word)
@@ -156,5 +156,5 @@ void ORoad_init();
 void ORoad_tick();
 uint8_t ORoad_get_view_mode();
 int16_t ORoad_get_road_y(uint16_t);
-void ORoad_set_view_mode(uint8_t, Boolean);
+void ORoad_set_view_mode(uint8_t, uint8_t);
 

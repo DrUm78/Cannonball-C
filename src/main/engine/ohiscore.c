@@ -200,11 +200,13 @@ void OHiScore_tick()
                 #endif
                 OSoundInt_queue_sound(SOUND_MUSIC_LASTWAVE);
                 
+                #ifdef AMIGA
                  if (Config_sound.amiga_midi)
                 {
                     I_CAMD_StopSong();
                     I_CAMD_PlaySong("data/lastwave.mid");
                 }
+                #endif
                 
                 OHiScore_insert_score();               
             }
@@ -216,7 +218,7 @@ void OHiScore_tick()
             OHiScore_set_display_pos();
             acc_prev = -1;
             state = STATE_DISPLAY;
-            Video_enabled = TRUE;
+            Video_enabled = 1;
             break;
 
         // Display Basic High Score Table
@@ -288,7 +290,7 @@ void OHiScore_insert_score()
     else
     {
         OHiScore_scores[score_pos].time = 0;
-        OStats_game_completed = FALSE;
+        OStats_game_completed = 0;
     }
 
     // Setup Appropriate Minimap Tiles

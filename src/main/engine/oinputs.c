@@ -7,7 +7,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/ocrash.h"
 #include "engine/oinputs.h"
 #include "engine/ostats.h"
@@ -26,7 +26,7 @@ int16_t OInputs_acc_adjust;
 int16_t OInputs_brake_adjust;
     
 // True = High Gear. False = Low Gear.
-Boolean OInputs_gear;
+uint8_t OInputs_gear;
 
 
 
@@ -47,7 +47,7 @@ static const int DELAY_RESET = 60;
 int delay1, delay2, delay3;
 
 // Coin Inputs (Only used by CannonBoard)
-Boolean coin1, coin2;
+uint8_t coin1, coin2;
 
 // ------------------------------------------------------------------------
 // Variables from original code
@@ -85,13 +85,13 @@ void OInputs_init()
 
     OInputs_input_acc   = 0;
     input_brake = 0;
-    OInputs_gear        = FALSE;
+    OInputs_gear        = 0;
     OInputs_crash_input = 0;
     delay1      = 0;
     delay2      = 0;
     delay3      = 0;
-    coin1       = FALSE;
-    coin2       = FALSE;
+    coin1       = 0;
+    coin2       = 0;
 }
 
 void OInputs_tick(Packet* packet)
@@ -238,9 +238,9 @@ void OInputs_do_gear()
         else if (Config_controls.gear == CONTROLS_GEAR_SEPARATE)
         {
             if (Input_has_pressed(INPUT_GEAR1))
-                OInputs_gear = FALSE;
+                OInputs_gear = 0;
             else if (Input_has_pressed(INPUT_GEAR2))
-                OInputs_gear = TRUE;
+                OInputs_gear = 1;
         }
 
         // Manual: Keyboard/Digital Button
@@ -321,7 +321,7 @@ uint8_t OInputs_do_credits()
 {
     if (Input_has_pressed(INPUT_COIN))
     {
-        Input_keys[INPUT_COIN] = FALSE; // immediately clear due to this routine being in vertical interrupt
+        Input_keys[INPUT_COIN] = 0; // immediately clear due to this routine being in vertical interrupt
         if (!Config_engine.freeplay && OStats_credits < 9)
         {
             OStats_credits++;
@@ -332,7 +332,7 @@ uint8_t OInputs_do_credits()
     }
     else if (coin1)
     {
-        coin1 = FALSE;
+        coin1 = 0;
         if (!Config_engine.freeplay && OStats_credits < 9)
         {
             OStats_credits++;
@@ -342,7 +342,7 @@ uint8_t OInputs_do_credits()
     }
     else if (coin2)
     {
-        coin2 = FALSE;
+        coin2 = 0;
         if (!Config_engine.freeplay && OStats_credits < 9)
         {
             OStats_credits++;
@@ -357,47 +357,47 @@ uint8_t OInputs_do_credits()
 // Menu Selection Controls
 // ------------------------------------------------------------------------------------------------
 
-Boolean OInputs_is_analog_l()
+uint8_t OInputs_is_analog_l()
 {
     if (OInputs_input_steering < STEERING_CENTRE - 0x10)
     {
         if (--delay1 < 0)
         {
             delay1 = DELAY_RESET;
-            return TRUE;
+            return 1;
         }
     }
     else
         delay1 = DELAY_RESET;
-    return FALSE;
+    return 0;
 }
 
-Boolean OInputs_is_analog_r()
+uint8_t OInputs_is_analog_r()
 {
     if (OInputs_input_steering > STEERING_CENTRE + 0x10)
     {
         if (--delay2 < 0)
         {
             delay2 = DELAY_RESET;
-            return TRUE;
+            return 1;
         }
     }
     else
         delay2 = DELAY_RESET;
-    return FALSE;
+    return 0;
 }
 
-Boolean OInputs_is_analog_select()
+uint8_t OInputs_is_analog_select()
 {
     if (OInputs_input_acc > 0x90)
     {
         if (--delay3 < 0)
         {
             delay3 = DELAY_RESET;
-            return TRUE;
+            return 1;
         }
     }
     else
         delay3 = DELAY_RESET;
-    return FALSE;
+    return 0;
 }

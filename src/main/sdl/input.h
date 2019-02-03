@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
 #include <SDL.h>
 
 typedef enum presses
@@ -29,14 +29,14 @@ typedef enum presses
     INPUT_PAUSE = 11,
     INPUT_STEP  = 12,
     INPUT_TIMER = 13,
-    INPUT_MENU = 14,     
+    INPUT_MENU = 14     
 };
 
-extern Boolean Input_keys[15];
-extern Boolean Input_keys_old[15];
+extern uint8_t Input_keys[15];
+extern uint8_t Input_keys_old[15];
 
 // Has gamepad been found?
-extern Boolean Input_gamepad;
+extern uint8_t Input_gamepad;
 
 // Use analog controls
 extern int Input_analog;
@@ -60,6 +60,6 @@ void Input_handle_joy_axis(SDL_JoyAxisEvent*);
 void Input_handle_joy_down(SDL_JoyButtonEvent*);
 void Input_handle_joy_up(SDL_JoyButtonEvent*);
 void Input_frame_done();
-Boolean Input_is_pressed(enum presses p);
-Boolean Input_is_pressed_clear(enum presses p);
-Boolean Input_has_pressed(enum presses p);
+uint8_t Input_is_pressed(enum presses p);
+uint8_t Input_is_pressed_clear(enum presses p);
+uint8_t Input_has_pressed(enum presses p);

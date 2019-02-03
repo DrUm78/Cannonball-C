@@ -12,7 +12,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 
@@ -20,7 +20,7 @@
 extern int16_t OInitEngine_camera_x_off;
 
 // Is the in-game engine active?
-extern Boolean OInitEngine_ingame_engine;
+extern uint8_t OInitEngine_ingame_engine;
 
 // Time to wait before enabling ingame_engine after crash
 extern int16_t OInitEngine_ingame_counter;

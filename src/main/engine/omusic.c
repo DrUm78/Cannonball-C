@@ -6,7 +6,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/oferrari.h"
 #include "engine/ohud.h"
 #include "engine/oinputs.h"
@@ -37,7 +37,7 @@ RomLoader tile_patch;
 
 
 // Load Modified Widescreen version of tilemap
-Boolean OMusic_load_widescreen_map()
+uint8_t OMusic_load_widescreen_map()
 {
     int status = 0;
 
@@ -61,7 +61,7 @@ Boolean OMusic_load_widescreen_map()
 void OMusic_enable()
 {
     int i;
-    OFerrari_car_ctrl_active = FALSE;
+    OFerrari_car_ctrl_active = 0;
     Video_clear_text_ram();
     OSprites_disable_sprites();
     OTraffic_disable_traffic();
@@ -126,7 +126,7 @@ void OMusic_disable()
         OTiles_setup_palette_tilemap();
     }
 
-    Video_enabled = FALSE; // Turn screen off
+    Video_enabled = 0; // Turn screen off
 }
 
 // Music Selection Screen: Setup Radio Sprite
@@ -252,7 +252,7 @@ void OMusic_tick()
         
         if (Config_sound.custom_music[0].enabled)
         {
-            OHud_blit_text_big(11, Config_sound.custom_music[0].title, TRUE);
+            OHud_blit_text_big(11, Config_sound.custom_music[0].title, 1);
             OMusic_music_selected = 0;
         }
         else
@@ -275,7 +275,7 @@ void OMusic_tick()
 
         if (Config_sound.custom_music[1].enabled)
         {
-            OHud_blit_text_big(11, Config_sound.custom_music[1].title, TRUE);
+            OHud_blit_text_big(11, Config_sound.custom_music[1].title, 1);
             OMusic_music_selected = 1;
         }
         else
@@ -297,7 +297,7 @@ void OMusic_tick()
 
         if (Config_sound.custom_music[2].enabled)
         {
-            OHud_blit_text_big(11, Config_sound.custom_music[2].title, TRUE);
+            OHud_blit_text_big(11, Config_sound.custom_music[2].title, 1);
             OMusic_music_selected = 2;
         }
         else

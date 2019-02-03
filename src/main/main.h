@@ -1,18 +1,16 @@
 #pragma once
-
+#include <stdint.h>
 #include "globals.h"
 
 #ifdef COMPILE_SOUND_CODE
 #include "sdl/audio.h"
 #endif
 
-
-
 // Frame counter
 extern int cannonball_frame;
 
 // Tick Logic. Used when running at non-standard > 30 fps
-extern Boolean cannonball_tick_frame;
+extern uint8_t cannonball_tick_frame;
 
 // Millisecond Time Per Frame
 extern double cannonball_frame_ms;

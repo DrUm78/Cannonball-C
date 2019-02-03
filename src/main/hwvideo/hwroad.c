@@ -1,7 +1,7 @@
 #include "hwvideo/hwroad.h"
 #include "globals.h"
 #include "frontend/config.h"
-
+#include <stdint.h>
 #include <string.h>
 
 /***************************************************************************
@@ -130,7 +130,7 @@ void (*HWRoad_render_background)(uint16_t*);
 void (*HWRoad_render_foreground)(uint16_t*);
 
 // Convert road to a more useable format
-void HWRoad_init(const uint8_t* src_road, const Boolean hires)
+void HWRoad_init(const uint8_t* src_road, const uint8_t hires)
 {
     HWRoad_road_control = 0;
     HWRoad_color_offset1 = 0x400;

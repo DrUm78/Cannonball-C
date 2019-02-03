@@ -6,7 +6,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "globals.h"
 #include <string.h>
 
@@ -65,7 +65,7 @@ void Interface_close();
 void Interface_start();
 void Interface_stop();
 void Interface_write(uint8_t dig_out, uint8_t mc_out);
-Boolean Interface_started();
+uint8_t Interface_started();
 Packet* Interface_get_packet();
 
 

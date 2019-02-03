@@ -12,8 +12,8 @@ typedef struct
     int pausedTicks;
 
     //The timer status
-    Boolean paused;
-    Boolean started;
+    uint8_t paused;
+    uint8_t started;
 } Timer;
 
 
@@ -28,5 +28,5 @@ void Timer_unpause(Timer* timer);
 int Timer_get_ticks(Timer* timer);
 
 //Checks the status of the timer
-Boolean Timer_is_started(Timer* timer);
-Boolean Timer_is_paused(Timer* timer);
+uint8_t Timer_is_started(Timer* timer);
+uint8_t Timer_is_paused(Timer* timer);

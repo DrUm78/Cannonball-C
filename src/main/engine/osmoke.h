@@ -8,7 +8,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 
@@ -16,6 +16,6 @@
 extern int8_t OSmoke_load_smoke_data;
 
 void OSmoke_init();
-void OSmoke_setup_smoke_sprite(Boolean);
+void OSmoke_setup_smoke_sprite(uint8_t);
 void OSmoke_draw_ferrari_smoke(oentry*);
 void OSmoke_draw(oentry*);

@@ -4,7 +4,7 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "interface.h"
 #ifdef CANNONBOARD
 #include "asyncserial.hpp"
@@ -19,7 +19,7 @@ void Interface_reset_stats() {}
 void Interface_close() {}
 void Interface_start() {}
 void Interface_stop() {}
-Boolean Interface_started() { return FALSE; }
+uint8_t Interface_started() { return 0; }
 void Interface_write(uint8_t dig_out, uint8_t mc_out) {}
 Packet* Interface_get_packet() { return &dummy; }
 #endif

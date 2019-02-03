@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
 
 typedef struct
 {
@@ -57,9 +57,9 @@ extern CoinChute OOutputs_chute2;
 
 
 void OOutputs_init();
-Boolean OOutputs_diag_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets);
-Boolean OOutputs_calibrate_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets);
+uint8_t OOutputs_diag_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets);
+uint8_t OOutputs_calibrate_motor(int16_t input_motor, uint8_t hw_motor_limit, uint32_t packets);
 void OOutputs_tick(int MODE, int16_t input_motor, int16_t cabinet_type); 
 void OOutputs_set_digital(uint8_t);
 void OOutputs_clear_digital(uint8_t);
-void OOutputs_coin_chute_out(CoinChute* chute, Boolean insert);
+void OOutputs_coin_chute_out(CoinChute* chute, uint8_t insert);

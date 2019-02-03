@@ -1,8 +1,8 @@
-#include "Video.h"
+#include "video.h"
 #include "hwvideo/hwsprites.h"
 #include "globals.h"
 #include "frontend/config.h"
-
+#include <stdint.h>
 /***************************************************************************
     Video Emulation: OutRun Sprite Rendering Hardware.
     Based on MAME source code.
@@ -97,7 +97,7 @@ void HWSprites_reset()
 }
 
 // Clip areas of the screen in wide-screen mode
-void HWSprites_set_x_clip(Boolean on)
+void HWSprites_set_x_clip(uint8_t on)
 {
     // Clip to central 320 width window.
     if (on)

@@ -9,11 +9,11 @@
 
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
 #include "roms.h"
 #include "globals.h"
 
-#include "Video.h"
+#include "video.h"
 
 #include "frontend/config.h"
 
@@ -22,7 +22,7 @@
 #include "osprites.h"
 #include "oroad.h"
 #include "oinitengine.h"
-#include "audio/OSoundInt.h"
+#include "audio/osoundint.h"
 #include "cannonboard/interface.h"
 
 // Globals
@@ -55,7 +55,7 @@ enum
 
 typedef struct 
 {
-    Boolean enabled;             // Time Trial Mode Enabled
+    uint8_t enabled;             // Time Trial Mode Enabled
     uint8_t  level;           // Time Trial Level
     uint8_t  traffic;         // Max Traffic Level
     uint8_t  laps;            // Total laps (maximum of 5 laps total allowed)
@@ -66,7 +66,7 @@ typedef struct
     uint8_t  laptimes[5][3];  // Stored lap times
     int16_t  best_lap_counter;// Counter representing best laptime
     uint8_t  best_lap[3];     // Stored best lap time
-    Boolean new_high_score;      // Has player achieved a new high score?
+    uint8_t new_high_score;      // Has player achieved a new high score?
 } time_trial_t;
 
 // Addresses (Used to swap between original and Japanese roms)
@@ -177,7 +177,7 @@ typedef struct
 
 
 
-extern Boolean Outrun_freeze_timer;
+extern uint8_t Outrun_freeze_timer;
 
 // CannonBall Game Mode
 extern uint8_t Outrun_cannonball_mode;
@@ -193,10 +193,10 @@ extern uint8_t Outrun_custom_traffic;
 extern time_trial_t Outrun_ttrial;
 
 // Service Mode Toggle: Not implemented yet.
-extern Boolean Outrun_service_mode;
+extern uint8_t Outrun_service_mode;
 
 // Tick Logic. Used when running at non-standard > 30 fps
-extern Boolean Outrun_tick_frame;
+extern uint8_t Outrun_tick_frame;
 
 // Tick Counter (always syncd to 30 fps to flash text and other stuff)
 extern uint32_t Outrun_tick_counter;
@@ -210,8 +210,8 @@ extern adr_t Outrun_adr;
 
 void Outrun_init();
 void Outrun_boot();
-void Outrun_tick(Packet* packet, Boolean tick_frame);
+void Outrun_tick(Packet* packet, uint8_t tick_frame);
 void Outrun_vint();
 void Outrun_init_best_outrunners();
-void Outrun_select_course(Boolean jap, Boolean prototype);
+void Outrun_select_course(uint8_t jap, uint8_t prototype);
 

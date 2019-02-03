@@ -14,6 +14,7 @@
 
 #include "stdint.h"
 #include "romloader.h"
+#include "globals.h"
 
 /* struct describing a single operator */
 typedef struct
@@ -80,3 +81,4 @@ void YM_set_volume(uint8_t);
 void YM_write_reg(int r, int v);
 uint32_t YM_read_status();
 
+extern const uint32_t AUDIO_FREQUENCY;

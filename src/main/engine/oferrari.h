@@ -18,7 +18,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 
@@ -63,7 +63,7 @@ extern uint8_t OFerrari_state;
 extern uint16_t OFerrari_counter;
 
 extern int16_t OFerrari_steering_old;
-extern Boolean OFerrari_car_ctrl_active;
+extern uint8_t OFerrari_car_ctrl_active;
     
 // Car State
 //
@@ -75,7 +75,7 @@ extern int8_t OFerrari_car_state;
 enum { CAR_ANIM_SEQ = -1, CAR_NORMAL = 0, CAR_SMOKE = 1};
 
 // Auto breaking for end sequence
-extern Boolean OFerrari_auto_brake;
+extern uint8_t OFerrari_auto_brake;
 
 // Torque table index lookup
 //

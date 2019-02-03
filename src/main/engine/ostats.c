@@ -14,7 +14,7 @@
 #include "engine/outils.h"
 #include "engine/ostats.h"
 #include "engine/otraffic.h"
-
+#include <stdint.h>
 
 
 // Converted Stage Millisecond Value
@@ -52,12 +52,12 @@ int16_t OStats_frame_counter;
 int16_t OStats_time_counter;
 int16_t OStats_extend_play_timer;
 int16_t OStats_stage_counters[15];
-Boolean OStats_game_completed;
+uint8_t OStats_game_completed;
 const uint8_t* OStats_lap_ms = LAP_MS_64;
 uint8_t OStats_credits;
 uint8_t OStats_stage_times[15][3];
 
-void OStats_init(Boolean ttrial)
+void OStats_init(uint8_t ttrial)
 {
     OStats_credits = ttrial ? 1 : 0;
 }

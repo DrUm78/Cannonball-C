@@ -12,7 +12,7 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 // Colours for default text palette
@@ -42,7 +42,7 @@ void OHud_draw_debug_info(uint32_t pos, uint16_t height_pat, uint8_t sprite_pat)
 void OHud_blit_text1(uint32_t);
 void OHud_blit_text1XY(uint8_t x, uint8_t y, uint32_t src_addr);
 void OHud_blit_text2(uint32_t);
-void OHud_blit_text_big(const uint8_t Y, const char* text, Boolean do_notes);
+void OHud_blit_text_big(const uint8_t Y, const char* text, uint8_t do_notes);
 void OHud_blit_text_new(uint16_t, uint16_t, const char* text, uint16_t col);
 void OHud_blit_speed(uint32_t, uint16_t);
 void OHud_blit_large_digit(uint32_t*, uint8_t);

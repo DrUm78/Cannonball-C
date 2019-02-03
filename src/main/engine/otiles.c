@@ -14,7 +14,7 @@
 #include "../trackloader.h"
 #include "engine/opalette.h"
 #include "engine/otiles.h"
-
+#include <stdint.h>
 
 uint8_t OTiles_tilemap_ctrl;
 
@@ -61,10 +61,10 @@ uint8_t tilemap_setup;
 enum { SETUP_TILES, SETUP_PAL };
 
 // + 0x22: Clear Old Name Tables
-Boolean clear_name_tables;
+uint8_t clear_name_tables;
 
 // + 0x23: Set when road is splitting (used by UpdateFGPage and UpdateBGPage)
-Boolean page_split;
+uint8_t page_split;
 
 // + 0x24: H-Scroll Lookup Table
 uint16_t h_scroll_lookup;
@@ -534,7 +534,7 @@ void OTiles_scroll_tilemaps()
 
     // Denote road not splitting (used by UpdateFGPage and UpdateBGPage)    
     if (OInitEngine_rd_split_state == INITENGINE_SPLIT_NONE)
-        page_split = FALSE;
+        page_split = 0;
 
     OTiles_update_fg_page();           // Update FG Pages, based on new H-Scroll
     OTiles_update_bg_page();           // Update BG Pages, based on new H-Scroll
@@ -555,7 +555,7 @@ void OTiles_loop_to_stage1()
 void OTiles_clear_old_name_table()
 {
     uint32_t i;
-    clear_name_tables = FALSE; // Denote tilemaps have been cleared
+    clear_name_tables = 0; // Denote tilemaps have been cleared
 
     // Odd Stages
     if (page & 1)
@@ -724,8 +724,8 @@ void OTiles_update_bg_page()
 void OTiles_init_next_tilemap()
 {
     h_scroll_lookup = 0;
-    clear_name_tables = FALSE;
-    page_split = FALSE;
+    clear_name_tables = 0;
+    page_split = 0;
     OPalette_pal_manip_ctrl = 1; // Enable palette fade routines to transition between levels
     
     switch (tilemap_setup & 1)
@@ -862,10 +862,10 @@ void OTiles_split_tilemaps()
     else
     {
         OTiles_tilemap_ctrl = TILEMAP_SCROLL;
-        page_split = TRUE;
+        page_split = 1;
         OInitEngine_end_stage_props &= ~BIT_0; // Denote Sky Palette Change Done
         h_scroll_lookup = 0;
-        clear_name_tables = TRUE; // Erase old tile name tables
+        clear_name_tables = 1; // Erase old tile name tables
     }
 }
 

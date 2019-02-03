@@ -8,14 +8,14 @@
     Copyright Chris White.
     See license.txt for more details.
 ***************************************************************************/
-
+#include <stdint.h>
 #include "engine/outrun.h"
-#include "engine/audio/OSound.h"
-#include "engine/audio/OSoundInt.h"
+#include "engine/audio/osound.h"
+#include "engine/audio/osoundint.h"
 
 
 // SoundChip: Sega Custom Sample Generator
-Boolean OSoundInt_has_booted = FALSE;
+uint8_t OSoundInt_has_booted = 0;
 uint8_t OSoundInt_engine_data[8];
 
 // 4 MHz
@@ -56,7 +56,7 @@ void OSoundInt_init()
     }
 
     SegaPCM_init(Config_fps);
-    YM_init(44100, Config_fps);
+    YM_init(REAL_AUDIO_FREQUENCY, Config_fps);
 
     OSoundInt_reset();
 

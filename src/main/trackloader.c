@@ -14,6 +14,7 @@
 
 #include "trackloader.h"
 #include <stdio.h>
+#include <stdint.h>
 #include "roms.h"
 #include "engine/outrun.h"
 #include "engine/oaddresses.h"
@@ -96,7 +97,7 @@ void TrackLoader_Destroy()
 {
 }
 
-void TrackLoader_init(Boolean jap)
+void TrackLoader_init(uint8_t jap)
 {
     if (mode == MODE_ORIGINAL)
         TrackLoader_init_original_tracks(jap);
@@ -104,25 +105,25 @@ void TrackLoader_init(Boolean jap)
         TrackLoader_init_layout_tracks(jap);
 }
 
-Boolean TrackLoader_set_layout_track(const char* filename)
+uint8_t TrackLoader_set_layout_track(const char* filename)
 {
     RomLoader_create(&TrackLoader_layout);
     
     if (RomLoader_load_binary(&TrackLoader_layout, filename))
-        return FALSE;
+        return 0;
 
     mode = MODE_LAYOUT;
 
-    return TRUE;
+    return 1;
 }
 
-void TrackLoader_init_original_tracks(Boolean jap)
+void TrackLoader_init_original_tracks(uint8_t jap)
 {
     int i = 0;
     
     TrackLoader_stage_data = jap ? STAGE_MAPPING_JAP : STAGE_MAPPING_USA;
 
-    TrackLoader_display_start_line = TRUE;
+    TrackLoader_display_start_line = 1;
 
     // --------------------------------------------------------------------------------------------
     // Setup Shared Data
@@ -182,7 +183,7 @@ void TrackLoader_init_original_tracks(Boolean jap)
     }
 }
 
-void TrackLoader_init_layout_tracks(Boolean jap)
+void TrackLoader_init_layout_tracks(uint8_t jap)
 {
     int i = 0;
     TrackLoader_stage_data = STAGE_MAPPING_USA;

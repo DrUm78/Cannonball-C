@@ -13,12 +13,12 @@
 ***************************************************************************/
 
 #pragma once
-
+#include <stdint.h>
 #include "outrun.h"
 
 
 // Load Sprites Needed for Course Map
-extern Boolean OMap_init_sprites;
+extern uint8_t OMap_init_sprites;
 
 void OMap_init();
 void OMap_tick();

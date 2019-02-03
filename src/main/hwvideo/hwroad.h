@@ -1,12 +1,12 @@
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
 
 
 #define ROAD_RAM_SIZE 0x1000
 #define HWRoad_rom_size 0x8000
 
-void HWRoad_init(const uint8_t*, const Boolean hires);
+void HWRoad_init(const uint8_t*, const uint8_t hires);
 void HWRoad_write16(uint32_t adr, const uint16_t data);
 void HWRoad_write16IncP(uint32_t* adr, const uint16_t data);
 void HWRoad_write32(uint32_t* adr, const uint32_t data);

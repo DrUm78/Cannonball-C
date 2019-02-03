@@ -216,7 +216,7 @@ boolean I_CAMD_InitMusic(void)
    RealTimeBase=NULL;
    CamdBase=NULL;
    mt=NULL;
-   notdone=TRUE;
+   notdone=1;
    pfillbuf[0]=fillbuf1;
    pfillbuf[1]=fillbuf2;
    fillclock[0]=0L;
@@ -225,7 +225,7 @@ boolean I_CAMD_InitMusic(void)
    lastRSchan=0xf1; /* Status of $F1 is undefined in Standard MIDI file Spec */
    tempo_offs = 0;
    tfactor= 12 << TSHIFT;
-   Playing = FALSE; 
+   Playing = 0; 
  
    /*--------------------------------------*/
    /* Open the CAMD and RealTime libraries */
@@ -283,7 +283,7 @@ void I_CAMD_PlaySong(char *filename)
             RemTask(p);
             
             p = NULL;
-            Playing = FALSE;
+            Playing = 0;
             pPlayer = NULL;
             pData = NULL;
             pMidiLink = NULL;
@@ -291,7 +291,7 @@ void I_CAMD_PlaySong(char *filename)
             smfhandle = NULL;
             smfdata = NULL;
             
-            notdone = TRUE;
+            notdone = 1;
      
             Delay(100);
             
@@ -311,7 +311,7 @@ void I_CAMD_PlaySong(char *filename)
 
 void I_CAMD_PauseSong(void)
 {
-   Playing = FALSE;
+   Playing = 0;
 }
 
 void I_CAMD_ResumeSong(void)
@@ -337,14 +337,14 @@ void I_CAMD_StopSong(void)
         RemTask(p);
     
         p = NULL;
-        Playing = FALSE;
+        Playing = 0;
         pPlayer = NULL;
         pData = NULL;
         pMidiLink = NULL;
         pMidiNode = NULL;
         smfhandle = NULL;
         smfdata = NULL;
-        notdone = TRUE;
+        notdone = 1;
     }
 }
 
@@ -353,7 +353,7 @@ void I_CAMD_StopSong(void)
 void I_CAMD_UnRegisterSong(void *handle)
 {
         
-   Playing = FALSE;             
+   Playing = 0;             
     
 }
  
@@ -370,7 +370,7 @@ void CAMDWorker(void)
     pPlayer=NULL;
     
     mt=NULL;
-    notdone=TRUE;
+    notdone=1;
     pfillbuf[0]=fillbuf1;
     pfillbuf[1]=fillbuf2;
     fillclock[0]=0L;
@@ -379,7 +379,7 @@ void CAMDWorker(void)
     lastRSchan=0xf1; /* Status of $F1 is undefined in Standard MIDI file Spec */
     tempo_offs = 0;
     tfactor= 12 << TSHIFT;
-    Playing = FALSE;
+    Playing = 0;
     
      
     smfhandle= Open( MIDIName , MODE_OLDFILE );
@@ -520,7 +520,7 @@ void CAMDWorker(void)
     
     pMidiLink=AddMidiLink( pMidiNode, MLTYPE_Sender,
                                      MLINK_Comment,  "PlayMF Player Link",
-                                     MLINK_Parse,    TRUE,
+                                     MLINK_Parse,    1,
                                      MLINK_Location, "out.0",
                                      TAG_END);
     if(!pMidiLink)
@@ -677,12 +677,12 @@ void CAMDWorker(void)
     /*---------------------*/
     timerr = SetPlayerAttrs( pPlayer,
                             PLAYER_AlarmTime, fillclock[masterswitch],
-                            PLAYER_Ready, TRUE,
+                            PLAYER_Ready, 1,
                             TAG_END);
     if(!timerr)
        kill("Couldn't set player attrs\n");
     
-    Playing = TRUE;
+    Playing = 1;
     
     while(donecount<trackct)
     {
@@ -756,7 +756,7 @@ void CAMDWorker(void)
       /*---------------------*/
       timerr = SetPlayerAttrs( pPlayer,
                                PLAYER_AlarmTime, fillclock[masterswitch],
-                               PLAYER_Ready, TRUE,
+                               PLAYER_Ready, 1,
                                TAG_END);
       if(!timerr)
           kill("Couldn't set player attrs 2\n");
@@ -782,7 +782,7 @@ void CAMDWorker(void)
     
     kill("");   
     
-    notdone = FALSE;
+    notdone = 0;
     
     
 }
@@ -802,7 +802,7 @@ static void I_CAMD_PollMusic(void)
         if (CamdBase)
         {
             
-            Playing = FALSE;
+            Playing = 0;
             pPlayer = NULL;
             pData = NULL;
             pMidiLink = NULL;
@@ -810,7 +810,7 @@ static void I_CAMD_PollMusic(void)
             smfhandle = NULL;
             smfdata = NULL;
             
-            notdone = TRUE;         
+            notdone = 1;         
             
             p = CreateNewProcTags(
                 NP_Entry, &CAMDWorker,
@@ -834,9 +834,9 @@ UBYTE *DecodeEvent(UBYTE *ptdata,struct DecTrack *pDTdata, ULONG deswitch)
    BOOL skipit;
 
    pDTdata->absdelta = 0L;
-   pDTdata->playable = TRUE; /* Assume it's playble and not a meta-event */
+   pDTdata->playable = 1; /* Assume it's playble and not a meta-event */
 
-   skipit=FALSE;
+   skipit=0;
    do
    {
       /* is this track all used up? */             
@@ -870,7 +870,7 @@ UBYTE *DecodeEvent(UBYTE *ptdata,struct DecTrack *pDTdata, ULONG deswitch)
             
             if(status<240) /* Handle easy status $8x - $Ex */
             {
-               skipit=FALSE;
+               skipit=0;
                pDTdata->d1 = *ptdata;
                if(status<192 || status>223) /* $80-$BF, $E0-$EF: 2 data bytes */
                {
@@ -881,7 +881,7 @@ UBYTE *DecodeEvent(UBYTE *ptdata,struct DecTrack *pDTdata, ULONG deswitch)
             }
             else /* Status byte $Fx, system exclusive or meta events  */
             {
-               skipit=TRUE;
+               skipit=1;
                
                if(status==0xff)            /* It's a meta event ($ff) */
                {
@@ -906,11 +906,11 @@ UBYTE *DecodeEvent(UBYTE *ptdata,struct DecTrack *pDTdata, ULONG deswitch)
 
                      /* Tempo event is not playable.  This prevents the */
                      /* event from being transferred to the play buffer */
-                     pDTdata->playable = FALSE; 
+                     pDTdata->playable = 0; 
 
                      /* Even though this event can't be played, it     */
                      /* takes some time and should not be skipped.     */
-                     skipit=FALSE;
+                     skipit=0;
                   }
                   length=ComVarLen(ptdata);
                   pDTdata->absmlength=length;
@@ -937,7 +937,7 @@ UBYTE *DecodeEvent(UBYTE *ptdata,struct DecTrack *pDTdata, ULONG deswitch)
          }
          else /* Event without status ($00-$7F): use running status */
          {
-            skipit=FALSE;
+            skipit=0;
             /* Running status data bytes */
             status=pDTdata->status;
             pDTdata->rstatus=status;
