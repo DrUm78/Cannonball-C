@@ -41,7 +41,8 @@ uint32_t Config_cont_traffic;
 #define KEYBOARD_LSHIFT 304
 #define KEYBOARD_RCTRL 305
 #define KEYBOARD_RETURN 13
-#define KEYBOARD_SPACE 13
+#define KEYBOARD_ESCAPE 27
+#define KEYBOARD_SPACE 32
 #define KEYBOARD_TAB 9
 #define KEYBOARD_BACKSPACE 8
 
@@ -74,14 +75,10 @@ void Config_init()
     // Video Settings
     // ------------------------------------------------------------------------
 
-    Config_video.mode       = 1;
+    Config_video.mode       = 2;
     Config_video.scale      = 0;
     Config_video.scanlines  = 0;
-#ifdef BITTBOY
     Config_video.fps        = 0;
-#else
-    Config_video.fps        = 2;
-#endif
     Config_video.fps_count  = 0;
     Config_video.widescreen = 0;
     Config_video.hires      = 0;
@@ -94,14 +91,28 @@ void Config_init()
     // Sound Settings
     // ------------------------------------------------------------------------
     Config_sound.enabled     = 1;
-    Config_sound.advertise   = 0;
-    Config_sound.preview     = 0;
+    Config_sound.advertise   = 1;
+    Config_sound.preview     = 1;
     Config_sound.fix_samples = 0;
  
     Config_controls.gear          = 0;
     Config_controls.steer_speed   = 3;
     Config_controls.pedal_speed   = 4;
-#ifdef BITTBOY
+#if RS90_PORT   
+	Config_controls.gear          = CONTROLS_GEAR_AUTO;
+	Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
+    Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
+    Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
+    Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
+    Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
+    Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
+    Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = 0;
+    Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
+    Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
+    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_BACKSPACE;
+    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_ESCAPE;
+    Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_TAB;
+#elif BITTBOY
     Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
     Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
     Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
@@ -111,7 +122,7 @@ void Config_init()
     Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_SPACE;
     Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
     Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
+    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_ESCAPE;
     Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_RCTRL;
     Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
 #else
@@ -125,7 +136,7 @@ void Config_init()
     Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
     Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
     Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
-    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_BACKSPACE;
+    Config_controls.keyconfig[INGAME_INPUT_MENU] = 0;
     Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
 #endif
     Config_controls.padconfig[0]  = 0;
@@ -197,6 +208,7 @@ void Config_load(const char* filename)
 {
     int i;
     Config_init();
+#ifdef XML
     XMLDoc doc;
     if (!XMLDoc_init(&doc) || !XMLDoc_parse_file_DOM(filename, &doc))
     {
@@ -342,10 +354,12 @@ void Config_load(const char* filename)
     Config_cont_traffic   = GetXMLDocValueInt(&doc, "/continuous/traffic", 3);
 
     XMLDoc_free(&doc);
+#endif
 }
 
 uint8_t Config_save(const char* filename)
 {
+#ifdef XML
     XMLDoc saveDoc;
     XMLDoc_init(&saveDoc);
     
@@ -423,6 +437,7 @@ uint8_t Config_save(const char* filename)
     XMLDoc_print(&saveDoc, file, "\n", "\t", 0, 0, 4);
     fclose(file);
     XMLDoc_free(&saveDoc);
+#endif
 
     return 1;
 }
@@ -430,6 +445,7 @@ uint8_t Config_save(const char* filename)
 
 void Config_load_scores(const char* filename)
 {
+#ifdef XML
     int i;
     XMLDoc doc;
     if (!XMLDoc_init(&doc) || !XMLDoc_parse_file_DOM(filename, &doc))
@@ -473,10 +489,12 @@ void Config_load_scores(const char* filename)
     }
 
     XMLDoc_free(&doc);
+#endif
 }
 
 void Config_save_scores(const char* filename)
 {
+#ifdef XML
     int i;
     XMLDoc saveDoc;
     XMLDoc_init(&saveDoc);
@@ -509,10 +527,12 @@ void Config_save_scores(const char* filename)
     XMLDoc_print(&saveDoc, file, "\n", "\t", 0, 0, 4);
     fclose(file);
     XMLDoc_free(&saveDoc);
+#endif
 }
 
 void Config_load_tiletrial_scores()
 {
+#ifdef XML
     int i;
     const char* filename = Config_engine.jap ? FILENAME_TTRIAL_JAPAN : FILENAME_TTRIAL;
 
@@ -539,10 +559,12 @@ void Config_load_tiletrial_scores()
         strcpy(childtag, basexmltag); strcat(childtag, Utils_int_to_string(i));
         Config_ttrial.best_times[i] = GetXMLDocValueInt(&doc, childtag, COUNTER_1M_15);
     }
+#endif
 }
 
 void Config_save_tiletrial_scores()
 {
+#ifdef XML
     int i;
     XMLDoc saveDoc;
     XMLDoc_init(&saveDoc);
@@ -572,10 +594,12 @@ void Config_save_tiletrial_scores()
     XMLDoc_print(&saveDoc, file, "\n", "\t", 0, 0, 4);
     fclose(file);
     XMLDoc_free(&saveDoc);
+#endif
 }
 
 uint8_t Config_clear_scores()
 {
+#ifdef XML
     // Init Default Hiscores
     OHiScore_init_def_scores();
 
@@ -591,6 +615,9 @@ uint8_t Config_clear_scores()
 
     // remove returns 0 on success
     return clear == 6;
+#else
+	return 0;
+#endif
 }
 
 void Config_set_fps(int fps)

@@ -32,7 +32,7 @@ enum
 };
 
 uint8_t redef_state;
-uint32_t frame;
+static uint32_t frame;
 int32_t message_counter;
 const static int32_t MESSAGE_TIME = 5;
 const char* msg;

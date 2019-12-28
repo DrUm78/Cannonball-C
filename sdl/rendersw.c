@@ -15,9 +15,35 @@
 #include "../setup.h"
 #include <SDL.h>
 
+/* alekmaul's scaler taken from mame4all */
+void bitmap_scale(uint32_t startx, uint32_t starty, uint32_t viswidth, uint32_t visheight, uint32_t newwidth, uint32_t newheight,uint32_t pitchsrc,uint32_t pitchdest, uint16_t* restrict src, uint16_t* restrict dst)
+{
+    uint32_t W,H,ix,iy,x,y;
+    x=startx<<16;
+    y=starty<<16;
+    W=newwidth;
+    H=newheight;
+    ix=(viswidth<<16)/W;
+    iy=(visheight<<16)/H;
+
+    do 
+    {
+        uint16_t* restrict buffer_mem=&src[(y>>16)*pitchsrc];
+        W=newwidth; x=startx<<16;
+        do 
+        {
+            *dst++=buffer_mem[x>>16];
+            x+=ix;
+        } while (--W);
+        dst+=pitchdest;
+        y+=iy;
+    } while (--H);
+}
+
+
 uint32_t my_min(uint32_t a, uint32_t b) { return a < b ? a : b; }
 
-SDL_Surface *Render_surface;
+SDL_Surface *Render_surface, *real_screen;
 
 // Palette Lookup
 uint32_t Render_rgb[S16_PALETTE_ENTRIES * 3];    // Extended to hold shadow/hilight colours
@@ -110,9 +136,19 @@ uint8_t Render_init(int src_width, int src_height,
 	Render_scn_height = 224;
 #endif
 
+#ifdef RS90_PORT
+	real_screen = SDL_SetVideoMode(240, 160, 16, SDL_HWSURFACE
+#ifdef SDL_TRIPLEBUF
+	| SDL_TRIPLEBUF
+#else
+	| SDL_DOUBLEBUF
+#endif
+	);
+	Render_surface = SDL_CreateRGBSurface(SDL_HWSURFACE, Render_scn_width, Render_scn_height, bpp, 0, 0, 0, 0);
+#else
     // Set the video mode
 	Render_surface = SDL_SetVideoMode(Render_scn_width, Render_scn_height, bpp, flags);
-
+#endif
 
     if (!Render_surface)
     {
@@ -150,7 +186,12 @@ uint8_t Render_finalize_frame()
 {
 	if (SDL_MUSTLOCK(Render_surface))
 		SDL_UnlockSurface(Render_surface);
+#ifdef RS90_PORT
+	bitmap_scale(0, 0, 320, 224, 240, 160,320, 0, Render_surface->pixels, real_screen->pixels);
+	SDL_Flip(real_screen);
+#else
 	SDL_Flip(Render_surface);
+#endif
 	
     return 1;
 }
@@ -158,16 +199,26 @@ uint8_t Render_finalize_frame()
 void Render_draw_frame(uint16_t* pixels)
 {
 	uint32_t i = 0;
+	uint32_t x = 0, y = 0;
+	uint32_t width = 0, height = 0;
+	uint32_t skip = 0;
 #ifdef CENTER_240
-    uint16_t* spix = Render_screen_pixels + 1280;
+    uint16_t* spix = Render_screen_pixels + (1280 + 320);
 #else
     uint16_t* spix = Render_screen_pixels;
 #endif
     for (i = 0; i < (320 * 224); i++)
     {
+		x++;
+		if (x > 320)
+		{
+			x = 0;
+			y++;
+		}
+		
+		if (skip == 0)
 		*(spix++) = Render_rgb[*(pixels++) & ((S16_PALETTE_ENTRIES * 3) - 1)]; 
-	}   
-  
+	}
 }
 
 // Setup screen size
