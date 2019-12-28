@@ -57,7 +57,7 @@ int16_t spinflipcount2;
 //+24 [Word] Crash Slide Value (After Spin/Flip etc.)
 int16_t slide;
 //+26 [Word] Frame (actually an index into the Sprite format below)
-int16_t frame;
+static int16_t frame;
 //+28 [Long] Address of animation sequence (frame address, palette info etc.)
 uint32_t addr;
 //+2C [Word] Camera Pan X Target (for repositioning after crash)

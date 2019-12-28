@@ -20,7 +20,7 @@ uint32_t palm_frames[8];
 // Background Palette Entries
 static const uint8_t bg_pal[] = { 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9A, 0x9B, 0x9C };
 	
-uint8_t entry_start;
+static uint8_t entry_start;
 
 // Y Offset To Draw Logo At
 int16_t y_off;

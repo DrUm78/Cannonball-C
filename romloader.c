@@ -36,7 +36,7 @@ void RomLoader_init(RomLoader* romLoader, uint32_t length)
 {
     romLoader->length = length;
     romLoader->rom = (uint8_t*)malloc(length);
-    crcInit();
+    /*crcInit();*/
 }
 
 void RomLoader_unload(RomLoader* romLoader)

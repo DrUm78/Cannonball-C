@@ -8,5 +8,5 @@ const static char* FILENAME_TTRIAL = "hiscores_timetrial.xml";
 const static char* FILENAME_TTRIAL_JAPAN = "hiscores_timetrial_jap.xml";
 const static char* FILENAME_CONT   = "hiscores_continuous.xml";
 const static char* FILENAME_CONT_JAPAN   = "hiscores_continuous_jap.xml";
-const static int SDL_FLAGS = SDL_HWSURFACE | SDL_DOUBLEBUF;
+const static int SDL_FLAGS = SDL_HWSURFACE||SDL_NOFRAME|SDL_ANYFORMAT;
     

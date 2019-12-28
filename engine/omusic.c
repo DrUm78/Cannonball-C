@@ -18,7 +18,7 @@
 
 uint8_t OMusic_music_selected;
 
-uint16_t entry_start;
+static uint16_t entry_start;
 
 // Used to preview music track
 int16_t last_music_selected;

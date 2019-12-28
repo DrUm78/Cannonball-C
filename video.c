@@ -122,13 +122,14 @@ void Video_draw_frame()
 {
 	uint32_t i;
  
-    if (!Video_enabled)
+	Render_start_frame();
+   /* if (!Video_enabled)
     {
         // Fill with black Video_pixels
         for (i = 0; i < Config_s16_width * Config_s16_height; i++)
             Video_pixels[i] = 0;
     }
-    else
+    else*/
     {
         // OutRun Hardware Video Emulation
         HWTiles_update_tile_values();

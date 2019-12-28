@@ -95,7 +95,7 @@ uint16_t ORoad_pos_fine_old;
 int16_t pos_fine_diff;
 
 // 0x70E - [word] Counter. Counts to 7. Denotes Interpolated track section currently being written.
-int8_t counter;
+static int8_t counter;
 
 // 0x710 - Index Into Height Data (generally specifies hill type for specific section of road)
 // The results of the value will differ depending on which road height section currently on.

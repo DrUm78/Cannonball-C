@@ -93,7 +93,7 @@ int16_t movement_adjust2;
 int16_t movement_adjust3;
 
 // Counter control for motor tests
-int16_t counter;
+static int16_t counter;
 
 // Columns for output
 uint16_t col1 = 0;

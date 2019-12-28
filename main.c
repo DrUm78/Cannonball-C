@@ -59,7 +59,7 @@ static void process_events(void)
         {
             case SDL_KEYDOWN:
                 // Handle key presses.
-                if (event.key.keysym.sym == SDLK_ESCAPE)
+                if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_3)
                     cannonball_state = STATE_QUIT;
                 else
                     Input_handle_key_down(&event.key.keysym);
@@ -214,10 +214,10 @@ static void main_loop()
         t = Timer_get_ticks(&frame_time);
 
 		// Cap Frame Rate: Sleep Remaining Frame Time
-        if (t < deltatime)
+        /*if (t < deltatime)
         {
             SDL_Delay((Uint32) (deltatime - t));
-        }
+        }*/
         
         deltatime -= deltaintegral;
 
