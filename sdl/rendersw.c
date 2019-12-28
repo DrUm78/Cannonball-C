@@ -199,9 +199,6 @@ uint8_t Render_finalize_frame()
 void Render_draw_frame(uint16_t* pixels)
 {
 	uint32_t i = 0;
-	uint32_t x = 0, y = 0;
-	uint32_t width = 0, height = 0;
-	uint32_t skip = 0;
 #ifdef CENTER_240
     uint16_t* spix = Render_screen_pixels + (1280 + 320);
 #else
@@ -209,14 +206,6 @@ void Render_draw_frame(uint16_t* pixels)
 #endif
     for (i = 0; i < (320 * 224); i++)
     {
-		x++;
-		if (x > 320)
-		{
-			x = 0;
-			y++;
-		}
-		
-		if (skip == 0)
 		*(spix++) = Render_rgb[*(pixels++) & ((S16_PALETTE_ENTRIES * 3) - 1)]; 
 	}
 }
