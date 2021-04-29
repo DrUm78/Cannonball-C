@@ -93,7 +93,7 @@ void Config_init()
     Config_sound.enabled     = 1;
     Config_sound.advertise   = 1;
     Config_sound.preview     = 1;
-    Config_sound.fix_samples = 0;
+    Config_sound.fix_samples = 1;
  
     Config_controls.gear          = 0;
     Config_controls.steer_speed   = 3;

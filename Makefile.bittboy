@@ -1,9 +1,9 @@
-CHAINPREFIX=/opt/bittboy-toolchain
-CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/arm-miyoo-linux-musleabi-
+CHAINPREFIX=/opt/miyoo
+CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/arm-miyoo-linux-uclibcgnueabi-
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 STRIP = $(CROSS_COMPILE)strip
-SYSROOT     := $(CHAINPREFIX)/usr/arm-miyoo-linux-musleabi/sysroot
+SYSROOT     := $(CHAINPREFIX)/usr/arm-miyoo-linux-uclibcgnueabi/sysroot
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
