@@ -75,8 +75,8 @@ void Config_init()
     // Video Settings
     // ------------------------------------------------------------------------
 
-    Config_video.mode       = 2;
-    Config_video.scale      = 0;
+    Config_video.mode       = 1;
+    Config_video.scale      = 1;
     Config_video.scanlines  = 0;
     Config_video.fps        = 0;
     Config_video.fps_count  = 0;
@@ -122,8 +122,8 @@ void Config_init()
     Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_SPACE;
     Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
     Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_ESCAPE;
-    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_RCTRL;
+    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_RCTRL;
+    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_ESCAPE;
     Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
 #else
     Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
@@ -186,13 +186,13 @@ void Config_init()
     Config_engine.prototype     = 0;
     
     // Additional Level Objects
-    Config_engine.level_objects   = 0;
-    Config_engine.randomgen       = 0;
+    Config_engine.level_objects   = 1;
+    Config_engine.randomgen       = 1;
     Config_engine.fix_bugs_backup = 0;
-    Config_engine.fix_bugs        = 0;
-    Config_engine.fix_timer       = 0;
+    Config_engine.fix_bugs        = 1;
+    Config_engine.fix_timer       = 1;
     Config_engine.layout_debug    = 0;
-    Config_engine.new_attract     = 0;
+    Config_engine.new_attract     = 1;
 
     // ------------------------------------------------------------------------
     // Time Trial Mode
