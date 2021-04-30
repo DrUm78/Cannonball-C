@@ -33,3 +33,4 @@ cannonball:	${OBJS}
 clean:
 	rm *.o src/*.o engine/audio/*.o engine/*.o hwvideo/*.o engine/*.o directx/*.o frontend/*.o hwaudio/*.o sdl/*.o sdl/*.o thirdparty/crc/*.o thirdparty/sxmlc/*.o cannonboard/*.o
 	rm ${OUTPUT}
+	
