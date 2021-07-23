@@ -85,7 +85,11 @@ void Config_init()
     Config_video.scanlines  = 0;
     
     // 0 = 30, 1 = Arcade (60/30 mix), 2 = (Full 60 FPS)
+    #if defined(FUNKEY) || defined(GCW0) || defined(GKD350H)
     Config_video.fps        = 2;
+    #else
+    Config_video.fps        = 0;
+    #endif
     Config_video.fps_count  = 0;
     Config_video.widescreen = 0;
     Config_video.hires      = 0;
@@ -132,7 +136,7 @@ void Config_init()
 		Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
 		Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
 		Config_controls.keyconfig[INGAME_INPUT_MENU] = 0;
-		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
+		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_SPACE;
     #endif
 
     Config_controls.padconfig[0]  = 0;
