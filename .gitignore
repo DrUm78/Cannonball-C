@@ -4,6 +4,9 @@
 *.obj
 *.elf
 
+*.gcda
+*.opk
+
 # Precompiled Headers
 *.gch
 *.pch

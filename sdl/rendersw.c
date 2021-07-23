@@ -13,7 +13,9 @@
 #include <stdint.h>
 #include "../globals.h"
 #include "../setup.h"
-#include <SDL.h>
+
+#include "font/font_drawing.h"
+#include <SDL/SDL.h>
 
 /* alekmaul's scaler taken from mame4all */
 void bitmap_scale(uint32_t startx, uint32_t starty, uint32_t viswidth, uint32_t visheight, uint32_t newwidth, uint32_t newheight,uint32_t pitchsrc,uint32_t pitchdest, uint16_t* restrict src, uint16_t* restrict dst)
@@ -137,7 +139,7 @@ uint8_t Render_init(int src_width, int src_height,
 #endif
 
 #ifdef RS90_PORT
-	real_screen = SDL_SetVideoMode(240, 160, 16, SDL_HWSURFACE
+	real_screen = SDL_SetVideoMode(0, 0, 16, SDL_HWSURFACE
 #ifdef SDL_TRIPLEBUF
 	| SDL_TRIPLEBUF
 #else
@@ -187,7 +189,7 @@ uint8_t Render_finalize_frame()
 	if (SDL_MUSTLOCK(Render_surface))
 		SDL_UnlockSurface(Render_surface);
 #ifdef RS90_PORT
-	bitmap_scale(0, 0, 320, 224, 240, 160,320, 0, Render_surface->pixels, real_screen->pixels);
+	bitmap_scale(0, 0, 320, 224, real_screen->w, real_screen->h, 320, 0, Render_surface->pixels, real_screen->pixels);
 	SDL_Flip(real_screen);
 #else
 	SDL_Flip(Render_surface);
@@ -229,9 +231,6 @@ uint8_t Render_sdl_screen_size()
     return 1;
 }
 
-// See: SDL_PixelFormat
-#define CURRENT_RGB() (r << Render_Rshift) | (g << Render_Gshift) | (b << Render_Bshift);
-
 void Render_convert_palette(uint32_t adr, uint32_t r, uint32_t g, uint32_t b)
 {
     adr >>= 1;
@@ -240,7 +239,7 @@ void Render_convert_palette(uint32_t adr, uint32_t r, uint32_t g, uint32_t b)
     g = (g) * (255 / 31);
     b = (b) * (255 / 31);
     
-	Render_rgb[adr] = (r << 8 | g << 3 | b >> 3);
+	Render_rgb[adr] = SDL_MapRGB(Render_surface->format, r , g, b);
       
     // Create shadow / highlight colours at end of RGB array
     // The resultant values are the same as MAME
@@ -249,5 +248,63 @@ void Render_convert_palette(uint32_t adr, uint32_t r, uint32_t g, uint32_t b)
     g = (g * 202) / 256;
     b = (b * 202) / 256;
     
-    Render_rgb[adr + S16_PALETTE_ENTRIES] = Render_rgb[adr + (S16_PALETTE_ENTRIES * 2)] = ((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3);
+    Render_rgb[adr + S16_PALETTE_ENTRIES] = Render_rgb[adr + (S16_PALETTE_ENTRIES * 2)] = SDL_MapRGB(Render_surface->format, r , g, b);
+}
+
+
+void Show_Warning()
+{
+	char home_path_lo[256];
+	SDL_Event event;
+	int exit = 0;
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_ShowCursor(0);
+	Render_surface = SDL_SetVideoMode(0, 0, 16, SDL_SWSURFACE);
+	
+	snprintf(home_path_lo, sizeof(home_path_lo), "%s/.cannonball/", getenv("HOME"));
+	
+	while(!exit)
+	{
+		while (SDL_PollEvent(&event)) 
+		{
+			switch(event.type) 
+			{
+				case SDL_KEYDOWN:
+					switch(event.key.keysym.sym) 
+					{
+						/*
+						 * HOME is for OpenDingux
+						 * 3 is for RetroFW
+						 * RCTRL is for PocketGo v2
+						 * ESCAPE is mapped to Select
+						*/
+						case SDLK_HOME:
+						case SDLK_3:
+						case SDLK_RCTRL:
+						case SDLK_ESCAPE:
+							exit = 1;
+						break;
+						default:
+						break;
+					}
+				break;
+				case SDL_QUIT:
+					exit = 1;
+				break;
+			}
+		}
+
+		print_string("OUTRUN roms missing !", 65000, 0, 0, 15, Render_surface->pixels);
+		print_string("Extract OUTRUN roms in :", 65000, 0, 0, 30, Render_surface->pixels);
+		print_string(home_path_lo, 65000, 0, 0, 50, Render_surface->pixels);
+		
+		print_string("This is shown because", 65000, 0, 0, 80, Render_surface->pixels);
+		print_string("you did not extract them", 65000, 0, 0, 100, Render_surface->pixels);
+		print_string("Press Escape/HOME to exit", 65000, 0, 0, 130, Render_surface->pixels);
+		
+		SDL_Flip(Render_surface);
+		SDL_Delay(1);
+	}
+	
+	if (Render_surface) SDL_FreeSurface(Render_surface);
 }

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <stdint.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 typedef enum presses
 {

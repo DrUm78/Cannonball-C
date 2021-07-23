@@ -6,7 +6,7 @@
 ***************************************************************************/
 
 // SDL Library
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <stdint.h>
 
 // SDL Specific Code
@@ -301,6 +301,10 @@ int main(int argc, char* argv[])
 			main_loop();  // Loop until we quit the app
 		}
     }
+    else
+    {
+		Show_Warning();
+	}
 
     Clear_Cannonball();
 
