@@ -9,6 +9,7 @@
 ***************************************************************************/
 
 #include <stdint.h>
+#include <SDL/SDL.h>
 #include "main.h"
 #include "config.h"
 #include "globals.h"
@@ -32,19 +33,23 @@ uint32_t Config_fps;
 uint32_t Config_tick_fps;
 uint32_t Config_cont_traffic;
 
-#define KEYBOARD_UP 273
-#define KEYBOARD_DOWN 274
-#define KEYBOARD_LEFT 276
-#define KEYBOARD_RIGHT 275
-#define KEYBOARD_LCTRL 306
-#define KEYBOARD_LALT 308
-#define KEYBOARD_LSHIFT 304
-#define KEYBOARD_RCTRL 305
-#define KEYBOARD_RETURN 13
-#define KEYBOARD_ESCAPE 27
-#define KEYBOARD_SPACE 32
-#define KEYBOARD_TAB 9
-#define KEYBOARD_BACKSPACE 8
+#define KEYBOARD_UP SDLK_UP
+#define KEYBOARD_DOWN SDLK_DOWN
+#define KEYBOARD_LEFT SDLK_LEFT
+#define KEYBOARD_RIGHT SDLK_RIGHT
+#define KEYBOARD_LCTRL SDLK_LCTRL
+#define KEYBOARD_LALT SDLK_LALT
+#define KEYBOARD_LSHIFT SDLK_LSHIFT
+#ifdef BITTBOY
+#define KEYBOARD_RCTRL SDLK_RCTRL
+#else
+#define KEYBOARD_RCTRL SDLK_HOME
+#endif
+#define KEYBOARD_RETURN SDLK_RETURN
+#define KEYBOARD_ESCAPE SDLK_ESCAPE
+#define KEYBOARD_SPACE SDLK_SPACE
+#define KEYBOARD_TAB SDLK_TAB
+#define KEYBOARD_BACKSPACE SDLK_BACKSPACE
 
 typedef enum rl_presses
 {
@@ -75,10 +80,12 @@ void Config_init()
     // Video Settings
     // ------------------------------------------------------------------------
 
-    Config_video.mode       = 1;
-    Config_video.scale      = 1;
+    Config_video.mode       = 2;
+    Config_video.scale      = 0;
     Config_video.scanlines  = 0;
-    Config_video.fps        = 0;
+    
+    // 0 = 30, 1 = Arcade (60/30 mix), 2 = (Full 60 FPS)
+    Config_video.fps        = 2;
     Config_video.fps_count  = 0;
     Config_video.widescreen = 0;
     Config_video.hires      = 0;
@@ -98,47 +105,36 @@ void Config_init()
     Config_controls.gear          = 0;
     Config_controls.steer_speed   = 3;
     Config_controls.pedal_speed   = 4;
-#if RS90_PORT   
-	Config_controls.gear          = CONTROLS_GEAR_AUTO;
-	Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
-    Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
-    Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
-    Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
-    Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
-    Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
-    Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = 0;
-    Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
-    Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_BACKSPACE;
-    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_ESCAPE;
-    Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_TAB;
-#elif BITTBOY
-    Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
-    Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
-    Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
-    Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
-    Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
-    Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
-    Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_SPACE;
-    Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
-    Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_RCTRL;
-    Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_ESCAPE;
-    Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
-#else
-    Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
-    Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
-    Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
-    Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
-    Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
-    Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
-    Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_TAB;
-    Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
-    Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-    Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
-    Config_controls.keyconfig[INGAME_INPUT_MENU] = 0;
-    Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
-#endif
+    #if defined(RS90_PORT) && !defined(FUNKEY)
+		Config_controls.gear          = CONTROLS_GEAR_AUTO;
+		Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
+		Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
+		Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
+		Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
+		Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
+		Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
+		Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = 0;
+		Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
+		Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
+		Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_BACKSPACE;
+		Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_ESCAPE;
+		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_TAB;
+    #else
+		Config_controls.gear          = CONTROLS_GEAR_AUTO;
+		Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
+		Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
+		Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
+		Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
+		Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
+		Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
+		Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_TAB;
+		Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = KEYBOARD_BACKSPACE;
+		Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
+		Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
+		Config_controls.keyconfig[INGAME_INPUT_MENU] = 0;
+		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = 0;
+    #endif
+
     Config_controls.padconfig[0]  = 0;
     Config_controls.padconfig[1]  = 1;
     Config_controls.padconfig[2]  = 2;
@@ -186,13 +182,13 @@ void Config_init()
     Config_engine.prototype     = 0;
     
     // Additional Level Objects
-    Config_engine.level_objects   = 1;
-    Config_engine.randomgen       = 1;
+    Config_engine.level_objects   = 0;
+    Config_engine.randomgen       = 0;
     Config_engine.fix_bugs_backup = 0;
-    Config_engine.fix_bugs        = 1;
-    Config_engine.fix_timer       = 1;
+    Config_engine.fix_bugs        = 0;
+    Config_engine.fix_timer       = 0;
     Config_engine.layout_debug    = 0;
-    Config_engine.new_attract     = 1;
+    Config_engine.new_attract     = 0;
 
     // ------------------------------------------------------------------------
     // Time Trial Mode

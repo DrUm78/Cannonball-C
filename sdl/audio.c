@@ -13,7 +13,7 @@
     This is based upon code from the Atari800 emulator project.
     Copyright (c) 1998-2008 Atari800 development team
 ***************************************************************************/
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <stdint.h>
 #include "sdl/audio.h"
 #include "frontend/config.h" // fps

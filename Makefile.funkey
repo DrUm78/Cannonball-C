@@ -1,4 +1,4 @@
-CHAINPREFIX=/opt/bittboy-toolchain
+CHAINPREFIX=/opt/funkey-toolchain
 CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/arm-linux-
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
@@ -10,7 +10,7 @@ SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 PROFILE = APPLY
 
 CFLAGS = -I./ -I./engine/audio -I./src -I./hwvideo -I./engine -I./directx -I./frontend -I./hwaudio -I./sdl
-CFLAGS += -Ofast -fdata-sections -ffunction-sections -flto -fno-PIC -Wall $(FFLAGS) $(SDL_CFLAGS) -DSDL -DCOMPILE_SOUND_CODE -DHOME_SUPPORT -DBITTBOY -DRENDER_240
+CFLAGS += -Ofast -fdata-sections -ffunction-sections -flto -fno-PIC -Wall $(FFLAGS) $(SDL_CFLAGS) -DSDL -DCOMPILE_SOUND_CODE -DHOME_SUPPORT -DRS90_PORT -DFUNKEY
 
 ifeq ($(PROFILE), YES)
 CFLAGS += -fprofile-generate="/mnt/cannonball_gcda"

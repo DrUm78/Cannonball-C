@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 void I_CAMD_ShutdownMusic(void)
 {
