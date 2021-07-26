@@ -125,18 +125,18 @@ void Config_init()
 		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_TAB;
     #else
 		Config_controls.gear          = CONTROLS_GEAR_AUTO;
-		Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
-		Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
-		Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
-		Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
-		Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
-		Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
-		Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = KEYBOARD_TAB;
-		Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = KEYBOARD_BACKSPACE;
-		Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-		Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_LSHIFT;
+		Config_controls.keyconfig[INGAME_INPUT_UP]  = SDLK_u;
+		Config_controls.keyconfig[INGAME_INPUT_DOWN]  = SDLK_d;
+		Config_controls.keyconfig[INGAME_INPUT_LEFT]  = SDLK_l;
+		Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = SDLK_r;
+		Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = SDLK_b;
+		Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = SDLK_y;
+		Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = 0;
+		Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
+		Config_controls.keyconfig[INGAME_INPUT_START]  = SDLK_s;
+		Config_controls.keyconfig[INGAME_INPUT_COIN]  = 0;
 		Config_controls.keyconfig[INGAME_INPUT_MENU] = 0;
-		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_SPACE;
+		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = SDLK_a;
     #endif
 
     Config_controls.padconfig[0]  = 0;
@@ -181,18 +181,18 @@ void Config_init()
     Config_engine.dip_time    &= 3;
     Config_engine.dip_traffic &= 3;
 
-    Config_engine.freeplay      = 0;
+    Config_engine.freeplay      = 1;
     Config_engine.jap           = 0;
     Config_engine.prototype     = 0;
     
     // Additional Level Objects
-    Config_engine.level_objects   = 0;
-    Config_engine.randomgen       = 0;
+    Config_engine.level_objects   = 1;
+    Config_engine.randomgen       = 1;
     Config_engine.fix_bugs_backup = 0;
-    Config_engine.fix_bugs        = 0;
-    Config_engine.fix_timer       = 0;
+    Config_engine.fix_bugs        = 1;
+    Config_engine.fix_timer       = 1;
     Config_engine.layout_debug    = 0;
-    Config_engine.new_attract     = 0;
+    Config_engine.new_attract     = 1;
 
     // ------------------------------------------------------------------------
     // Time Trial Mode

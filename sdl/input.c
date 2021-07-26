@@ -160,7 +160,7 @@ void Input_handle_key(const int key, const uint8_t is_pressed)
     // Function keys are not redefinable
     switch (key)
     {
-        case SDLK_F1:
+        case SDLK_k:
             Input_keys[INPUT_PAUSE] = is_pressed;
             break;
 

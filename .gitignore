@@ -2,7 +2,7 @@
 *.o
 *.ko
 *.obj
-*.elf
+cannonball
 
 *.gcda
 *.opk

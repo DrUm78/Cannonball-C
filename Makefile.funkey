@@ -1,9 +1,9 @@
-CHAINPREFIX=/opt/funkey-toolchain
-CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/arm-linux-
+CHAINPREFIX=/opt/FunKey-sdk
+CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/arm-funkey-linux-musleabihf-
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 STRIP = $(CROSS_COMPILE)strip
-SYSROOT     := $(CHAINPREFIX)/usr/arm-buildroot-linux-musleabihf/sysroot
+SYSROOT     := $(CHAINPREFIX)/usr/arm-funkey-linux-musleabihf/sysroot
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
@@ -23,7 +23,7 @@ LDFLAGS     = -nodefaultlibs
 endif
 
 LDFLAGS += -lc -lgcc -lm $(SDL_LIBS) -Wl,--as-needed -Wl,--gc-sections -no-pie -flto -s
-OUTPUT = cannonball.elf
+OUTPUT = cannonball
 
 SOURCES = main.c sdl/music.c xmlutils.c romloader.c roms.c trackloader.c utils.c video.c thirdparty/crc/crc.c thirdparty/sxmlc/sxmlc.c thirdparty/sxmlc/sxmlsearch.c
 SOURCES += engine/oentry.c engine/oanimseq.c engine/oattractai.c engine/obonus.c engine/ocrash.c engine/oferrari.c engine/ohiscore.c engine/ohud.c engine/oinitengine.c engine/oinputs.c engine/olevelobjs.c engine/ologo.c engine/omap.c engine/omusic.c
@@ -44,5 +44,5 @@ $(OUTPUT):	${OBJS}
 		$(CC) ${CFLAGS} -o $@ $+ ${LDFLAGS}
 	
 clean:
-	rm *.o src/*.o engine/audio/*.o engine/*.o hwvideo/*.o engine/*.o directx/*.o frontend/*.o hwaudio/*.o sdl/*.o sdl/*.o thirdparty/crc/*.o thirdparty/sxmlc/*.o cannonboard/*.o font/*.o
+	rm *.o engine/audio/*.o engine/*.o hwvideo/*.o frontend/*.o hwaudio/*.o sdl/*.o thirdparty/crc/*.o thirdparty/sxmlc/*.o cannonboard/*.o font/*.o
 	rm ${OUTPUT}

@@ -276,12 +276,13 @@ void Show_Warning()
 						 * HOME is for OpenDingux
 						 * 3 is for RetroFW
 						 * RCTRL is for PocketGo v2
+						 * q is for FunKey S
 						 * ESCAPE is mapped to Select
 						*/
 						case SDLK_HOME:
 						case SDLK_3:
 						case SDLK_RCTRL:
-						case SDLK_ESCAPE:
+						case SDLK_q:
 							exit = 1;
 						break;
 						default:
@@ -294,13 +295,13 @@ void Show_Warning()
 			}
 		}
 
-		print_string("OUTRUN roms missing !", 65000, 0, 0, 15, Render_surface->pixels);
-		print_string("Extract OUTRUN roms in :", 65000, 0, 0, 30, Render_surface->pixels);
+		print_string("OUTRUN roms missing!", 65000, 0, 0, 15, Render_surface->pixels);
+		print_string("Extract OUTRUN roms in:", 65000, 0, 0, 30, Render_surface->pixels);
 		print_string(home_path_lo, 65000, 0, 0, 50, Render_surface->pixels);
 		
 		print_string("This is shown because", 65000, 0, 0, 80, Render_surface->pixels);
-		print_string("you did not extract them", 65000, 0, 0, 100, Render_surface->pixels);
-		print_string("Press Escape/HOME to exit", 65000, 0, 0, 130, Render_surface->pixels);
+		print_string("you did not extract them.", 65000, 0, 0, 100, Render_surface->pixels);
+		print_string("Press MENU to exit.", 65000, 0, 0, 130, Render_surface->pixels);
 		
 		SDL_Flip(Render_surface);
 		SDL_Delay(1);
