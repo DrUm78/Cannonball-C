@@ -59,7 +59,7 @@ static void process_events(void)
         {
             case SDL_KEYDOWN:
                 // Handle key presses.
-                if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_3)
+                if (event.key.keysym.sym == SDLK_q || event.key.keysym.sym == SDLK_3 || event.key.keysym.sym == SDLK_HOME)
                     cannonball_state = STATE_QUIT;
                 else
                     Input_handle_key_down(&event.key.keysym);

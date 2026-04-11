@@ -276,13 +276,12 @@ void Show_Warning()
 						 * HOME is for OpenDingux
 						 * 3 is for RetroFW
 						 * RCTRL is for PocketGo v2
-						 * q is for FunKey S
 						 * ESCAPE is mapped to Select
 						*/
 						case SDLK_HOME:
 						case SDLK_3:
 						case SDLK_RCTRL:
-						case SDLK_q:
+						case SDLK_ESCAPE:
 							exit = 1;
 						break;
 						default:

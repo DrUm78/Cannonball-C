@@ -1,6 +1,6 @@
 CC = gcc
 
-FFLAGS = -I./ -I./engine/audio -I./src -I./hwvideo -I./engine -I./directx -I./frontend -I./hwaudio -I./sdl
+FFLAGS = -I./ -I./engine/audio -I./hwvideo -I./engine -I./frontend -I./hwaudio -I./sdl
 CFLAGS = -O2 -march=native -g3 -Wall $(FFLAGS) `sdl-config --cflags --libs` -DSDL -DHOME_SUPPORT -DCOMPILE_SOUND_CODE
 LDFLAGS = -Wl,--as-needed `sdl-config --libs` -lm
 OUTPUT = cannonball.elf
@@ -24,5 +24,5 @@ cannonball.elf:	${OBJS}
 		$(CC) -o $@ $+ ${LDFLAGS}
 	
 clean:
-	rm *.o src/*.o engine/audio/*.o engine/*.o hwvideo/*.o engine/*.o directx/*.o frontend/*.o hwaudio/*.o sdl/*.o sdl/*.o thirdparty/crc/*.o thirdparty/sxmlc/*.o cannonboard/*.o font/*.o
+	rm *.o engine/audio/*.o hwvideo/*.o engine/*.o frontend/*.o hwaudio/*.o sdl/*.o thirdparty/crc/*.o thirdparty/sxmlc/*.o cannonboard/*.o font/*.o
 	rm ${OUTPUT}

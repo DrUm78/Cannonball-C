@@ -1,7 +1,7 @@
 #!/bin/sh
 
-make -f Makefile.funkey clean
-make -f Makefile.funkey
+make -f Makefile.350h clean
+make -f Makefile.350h
 
 mkdir -p opk/
 cp ./cannonball opk/
@@ -23,8 +23,8 @@ Name=CannonBall
 Comment=Enhanced OutRun engine v0.3
 Exec=cannonball
 Icon=cannonball
-Categories=games' > opk/cannonball.funkey-s.desktop
+Categories=games' > opk/cannonball.gcw0.desktop
 
-mksquashfs ./opk cannonball_v0.3_funkey-s.opk -all-root -noappend -no-exports -no-xattrs
+mksquashfs ./opk cannonball_v0.3_gcw0.opk -all-root -noappend -no-exports -no-xattrs
 
 rm -rf opk/

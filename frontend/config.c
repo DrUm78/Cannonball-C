@@ -109,20 +109,20 @@ void Config_init()
     Config_controls.gear          = 0;
     Config_controls.steer_speed   = 3;
     Config_controls.pedal_speed   = 4;
-    #if defined(RS90_PORT) && !defined(FUNKEY)
+    #if defined(RS90_PORT) && !defined(FUNKEY) || defined(GKD350H)
 		Config_controls.gear          = CONTROLS_GEAR_AUTO;
 		Config_controls.keyconfig[INGAME_INPUT_UP]  = KEYBOARD_UP;
 		Config_controls.keyconfig[INGAME_INPUT_DOWN]  = KEYBOARD_DOWN;
 		Config_controls.keyconfig[INGAME_INPUT_LEFT]  = KEYBOARD_LEFT;
 		Config_controls.keyconfig[INGAME_INPUT_RIGHT]  = KEYBOARD_RIGHT;
-		Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LCTRL;
-		Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LALT;
+		Config_controls.keyconfig[INGAME_INPUT_ACCEL]  = KEYBOARD_LALT;
+		Config_controls.keyconfig[INGAME_INPUT_BRAKE]  = KEYBOARD_LSHIFT;
 		Config_controls.keyconfig[INGAME_INPUT_GEAR1]  = 0;
 		Config_controls.keyconfig[INGAME_INPUT_GEAR2]  = 0;
 		Config_controls.keyconfig[INGAME_INPUT_START]  = KEYBOARD_RETURN;
-		Config_controls.keyconfig[INGAME_INPUT_COIN]  = KEYBOARD_BACKSPACE;
-		Config_controls.keyconfig[INGAME_INPUT_MENU] = KEYBOARD_ESCAPE;
-		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_TAB;
+		Config_controls.keyconfig[INGAME_INPUT_COIN]  = 0;
+		Config_controls.keyconfig[INGAME_INPUT_MENU] = 0;
+		Config_controls.keyconfig[INGAME_INPUT_VIEWPOINT] = KEYBOARD_LCTRL;
     #else
 		Config_controls.gear          = CONTROLS_GEAR_AUTO;
 		Config_controls.keyconfig[INGAME_INPUT_UP]  = SDLK_u;

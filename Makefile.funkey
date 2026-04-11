@@ -9,7 +9,7 @@ SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
 PROFILE = APPLY
 
-CFLAGS = -I./ -I./engine/audio -I./src -I./hwvideo -I./engine -I./directx -I./frontend -I./hwaudio -I./sdl
+CFLAGS = -I./ -I./engine/audio -I./hwvideo -I./engine -I./frontend -I./hwaudio -I./sdl
 CFLAGS += -Ofast -fdata-sections -ffunction-sections -flto -fno-PIC -Wall $(FFLAGS) $(SDL_CFLAGS) -DSDL -DCOMPILE_SOUND_CODE -DHOME_SUPPORT -DRS90_PORT -DFUNKEY
 
 ifeq ($(PROFILE), YES)
