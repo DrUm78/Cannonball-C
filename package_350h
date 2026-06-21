@@ -20,11 +20,11 @@ esac
 
 print '[Desktop Entry]
 Name=CannonBall
-Comment=Enhanced OutRun engine v0.3
+Comment=Enhanced OutRun engine
 Exec=cannonball
 Icon=cannonball
 Categories=games' > opk/cannonball.gcw0.desktop
 
-mksquashfs ./opk cannonball_v0.3_gcw0.opk -all-root -noappend -no-exports -no-xattrs
+mksquashfs ./opk cannonball_gcw0.opk -all-root -noappend -no-exports -no-xattrs
 
 rm -rf opk/
